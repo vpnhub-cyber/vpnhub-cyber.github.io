@@ -81,6 +81,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://vpnhub-cyber.github.io/articles/vpn-for-android-tablet-2025.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://vpnhub-cyber.github.io/articles/vpn-for-banking-2025.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -97,6 +102,11 @@
   </url>
   <url>
     <loc>https://vpnhub-cyber.github.io/articles/vpn-for-ios.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://vpnhub-cyber.github.io/articles/vpn-for-ipad-2025.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -121,6 +131,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://vpnhub-cyber.github.io/articles/vpn-for-smart-tv-2025.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://vpnhub-cyber.github.io/articles/vpn-for-smartphone-2025.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -134,6 +149,11 @@
     <loc>https://vpnhub-cyber.github.io/articles/vpn-for-students-school-2025.html</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://vpnhub-cyber.github.io/articles/vpn-for-tablet-2025.html</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://vpnhub-cyber.github.io/articles/vpn-for-torrents-2025.html</loc>
