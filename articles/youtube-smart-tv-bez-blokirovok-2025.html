@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>YouTube на Smart TV без блокировок: полный гайд (2025)</title>
+  <meta name="description" content="Как смотреть YouTube на Smart TV в России без блокировок в 2025: SmartTube Next, DNS/DoH и SmartDNS, настройка роутера (Keenetic, MikroTik, OpenWrt), Android TV, Samsung, LG. Полные инструкции и FAQ.">
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){
+        m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103602117', 'ym');
+    ym(103602117, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/103602117" style="position:absolute; left:-9999px;" alt=""></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+  <style>
+    :root{
+      --bg-main:#1b2735;
+      --bg-deep:#090a0f;
+      --panel: rgba(31, 44, 75, 0.93);
+      --panel-soft: rgba(25, 28, 48, 0.93);
+      --text:#e0e6ff;
+      --accent:#9ec5ff;
+      --brand1:#4776e6;
+      --brand2:#8e54e9;
+      --h2-bg: rgba(255, 232, 128, 0.10);
+      --h2-border: rgba(255, 232, 128, 0.35);
+      --h2-color:#ffe08a;
+      --h3-color:#cfe1ff;
+    }
+    *{box-sizing:border-box}
+    body {background: radial-gradient(ellipse at bottom, var(--bg-main) 0%, var(--bg-deep) 100%); color: var(--text); font-family: 'Montserrat', Arial, sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden;}
+    header { text-align: center; padding: 52px 18px 22px 18px; position: relative; z-index: 1;}
+    h1 { font-family: 'Russo One', Arial, sans-serif; font-size: 2.02rem; color: var(--accent); margin-bottom: 13px; letter-spacing: .6px; text-shadow: 0 0 9px #2f49ce, 0 0 14px #283593;}
+    .cosmo { font-size: 1.08rem; margin-bottom: 21px; color: #fffde4; text-shadow: 0 0 6px #232c47;}
+    main { max-width: 820px; margin: 0 auto; background: var(--panel); border-radius: 2rem; box-shadow: 0 4px 36px #243768aa; padding: 2em 1.3em 2.1em 1.3em; position: relative; z-index: 1;}
+    /* Читаемые заголовки без блюра */
+    h2 {
+      font-family: 'Russo One', Arial, sans-serif;
+      color: var(--h2-color);
+      font-size: 1.18rem;
+      letter-spacing: .4px;
+      margin: 1.7em 0 .85em 0;
+      padding: 10px 12px;
+      background: var(--h2-bg);
+      border-left: 4px solid var(--h2-border);
+      border-radius: 12px;
+      text-shadow: none;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+    h3 {
+      color: var(--h3-color);
+      margin: 1.05em 0 .45em 0;
+      font-size: 1.04rem;
+      letter-spacing:.2px;
+      text-shadow: none;
+      -webkit-font-smoothing: antialiased;
+    }
+    p { line-height: 1.62; }
+    ul, ol { margin: 1em 0 1em 1em; padding-left: 1.3em;}
+    li { margin-bottom: 0.65em;}
+    code, pre { background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 6px; }
+    pre { overflow: auto; padding: 10px 12px; }
+    .vpn-buttons { margin: 1.3em 0 2.1em 0; display: flex; flex-direction: column; gap: 0.6em;}
+    .vpn-btn { display: inline-block; background: linear-gradient(90deg, var(--brand1) 15%, var(--brand2) 85%); color: #fff; font-weight: 700; padding: 11px 30px; border-radius: 1.2rem; font-size: 1.05rem; text-decoration: none; transition: background 0.19s, box-shadow 0.19s, transform 0.15s; box-shadow: 0 4px 18px #303f8e77; letter-spacing: 1px; text-align: center;}
+    .vpn-btn:hover { background: linear-gradient(90deg, var(--brand2) 10%, var(--brand1) 90%); box-shadow: 0 8px 32px #82e2fd88; color: #fff200; transform: scale(1.06);}
+    a { color: #6abfff; text-decoration: underline;}
+    .back-link { display: inline-block; margin-top: 2em; color: #a7f2ff; background: rgba(25,28,48,0.83); border-radius: 1.3em; padding: 10px 28px; text-decoration: none; font-size: 1.05em; transition: background .16s, color .14s;}
+    .back-link:hover { background: #36f6ff; color: #20244c;}
+    .topics-links { margin-top: 28px; background: var(--panel-soft); border-radius: 1.1em; padding: 1em 1.1em 1em 1.1em;}
+    .topics-links ul { margin: 0; padding-left: 1.2em;}
+    .topics-links li { margin-bottom: 0.5em;}
+    details { background: rgba(40,50,90,0.91); margin: 0.7em 0; padding: 0.8em 1em; border-radius: 1em;}
+    summary { color: var(--h2-color); font-weight: bold; font-size: 1.05em; cursor: pointer;}
+    details[open] summary { color: var(--accent);}
+    .note { background: rgba(255,255,255,0.07); border-left: 3px solid var(--h2-color); padding: 10px 12px; border-radius: 8px; margin: 12px 0;}
+    .warn { background: rgba(255, 87, 51, 0.12); border-left: 3px solid #ff8a65; padding: 10px 12px; border-radius: 8px; margin: 12px 0;}
+    table { width: 100%; border-collapse: collapse; margin: 12px 0; background: var(--panel-soft);}
+    th, td { border: 1px solid rgba(255,255,255,0.12); padding: 8px 10px; text-align: left; vertical-align: top;}
+    th { color: var(--h2-color); font-weight: 700; }
+    footer { text-align: center; padding: 30px 10px 12px 10px; color: #475674; font-size: 0.97rem; letter-spacing: 0.2px; z-index: 2; position: relative;}
+    @media (max-width: 820px) { h1 { font-size: 1.26rem;} main { padding: 1.1em 0.6em;} }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>YouTube на Smart TV без блокировок: полный гайд (2025)</h1>
+    <div class="cosmo">Актуально на 10.08.2025. SmartTube Next, DoH/SmartDNS, настройка роутера (Keenetic, MikroTik, OpenWrt), решения для Android TV, Samsung Tizen, LG webOS, а также варианты без VPN и с частичным туннелем.</div>
+  </header>
+
+  <main>
+    <!-- Кнопки VPN с контекстными анкорами -->
+    <div class="vpn-buttons">
+      <a class="vpn-btn" href="https://t.me/normwpn_bot?start=referral_228691787" target="_blank" rel="noopener">Смотреть YouTube на ТВ через Норм VPN — 5 дней теста</a>
+      <a class="vpn-btn" href="https://t.me/SafeNetVpn_bot?start=afrrica" target="_blank" rel="noopener">SAFENET: стабильные 4K-потоки на Smart TV — 3 дня бесплатно (−15% на 1-ю оплату)</a>
+    </div>
+
+    <div class="note"><b>Как пользоваться гайдом:</b> идём от простого к техническому. Сначала включаем шифрованный DNS/SmartDNS, затем ставим SmartTube на Android TV. Если провайдер применяет DPI — настраиваем роутер или частичный VPN-туннель.</div>
+
+    <h2>Почему YouTube не открывается/тормозит на Smart TV</h2>
+    <p>Основные причины: подмена DNS, фильтрация медиадоменов (<i>googlevideo, ytimg</i>) и DPI, слабый 2,4 ГГц-Wi-Fi, перегруженный роутер, старые версии приложений. Решаем по цепочке: DNS → клиент на ТВ → роутер/сеть → при необходимости VPN/SmartDNS.</p>
+
+    <h2>Способ 1. SmartTube Next для Android TV/Google TV</h2>
+    <p>Альтернативный клиент YouTube для ТВ. Стабильно грузит ленту, поиск, комментарии, часто обходит проблемные места официального приложения.</p>
+    <h3>Установка</h3>
+    <ol>
+      <li>Скачайте APK с официального источника проекта на компьютер/телефон.</li>
+      <li>На ТВ включите «Установка из неизвестных источников» для вашего файлового менеджера.</li>
+      <li>Передайте APK на ТВ (через USB/облако/локальный сервер) и установите.</li>
+      <li>Запустите SmartTube → выберите регион/качество, авторизуйтесь через код (если нужно).</li>
+    </ol>
+    <h3>Troubleshooting</h3>
+    <ul>
+      <li>Не идёт 4K — используйте Ethernet или 5 ГГц, проверьте «Принудительный кодек/разрешение» в SmartTube.</li>
+      <li>Лента не загружается — обновите версию, проверьте DNS из Способа 2.</li>
+    </ul>
+
+    <h2>Способ 2. SmartDNS/DoH на роутере (рекомендуется для ТВ)</h2>
+    <p>SmartDNS перенаправляет только домены YouTube, сохраняя скорость и не шифруя весь трафик. Это лучший вариант для телевизоров и приставок.</p>
+    <h3>Общие шаги</h3>
+    <ol>
+      <li>Подключите SmartDNS у провайдера услуги (или включите DoH/DoT на роутере).</li>
+      <li>В роутере пропишите адреса DNS/профиль DoH. Перезапустите роутер.</li>
+      <li>Проверьте YouTube на ТВ. При необходимости добавьте домены <code>*.googlevideo.com</code>, <code>*.ytimg.com</code>, <code>youtube.com</code> в профиль.</li>
+    </ol>
+    <h3>Keenetic — пример</h3>
+    <ul>
+      <li>Интернет → Поставщик → Пользовательские DNS или DoH.</li>
+      <li>Домашняя сеть → Wi-Fi → используйте 5 ГГц, фиксированный канал 36/40/44/48.</li>
+    </ul>
+    <h3>MikroTik — пример</h3>
+    <ul>
+      <li>IP → DNS → Servers: <b>1.1.1.1, 1.0.0.1</b>, включите Remote Requests.</li>
+      <li>Wireless → 5 ГГц, свободный канал (Scanner/Spectral), ширина 40–80 МГц.</li>
+    </ul>
+    <h3>OpenWrt — пример</h3>
+    <ul>
+      <li>Установите <b>https-dns-proxy</b> и выберите провайдера DoH (Cloudflare/Google/NextDNS).</li>
+      <li>Включите SQM (cake/fq_codel) для снижения буферблоата при стримах.</li>
+    </ul>
+
+    <h2>Способ 3. Настройка DNS на Samsung Tizen и LG webOS</h2>
+    <p>Если доступа к роутеру нет, можно прописать DNS прямо на телевизоре.</p>
+    <h3>Samsung (Tizen)</h3>
+    <ol>
+      <li>Настройки → Общие → Сеть → Состояние сети → Параметры IP.</li>
+      <li>DNS: вручную → <b>1.1.1.1</b> (или <b>8.8.8.8</b>). Сохранить и перезагрузить ТВ.</li>
+    </ol>
+    <h3>LG (webOS)</h3>
+    <ol>
+      <li>Настройки → Сеть → Wi-Fi/Проводное → Дополнительно → Изменить.</li>
+      <li>Снимите «Автоматический DNS», впишите <b>1.1.1.1</b> и сохраните.</li>
+    </ol>
+    <div class="warn"><b>Важно:</b> если провайдер применяет DPI, только смена DNS может не помочь — переходите к Способу 4/5.</div>
+
+    <h2>Способ 4. Роутер-VPN с разделённым туннелем</h2>
+    <p>Для жёстких ограничений: запускаем VPN-клиент на роутере и пропускаем через него только домены/устройства YouTube (TV/приставку), остальной трафик идёт напрямую.</p>
+    <ul>
+      <li>Выберите быстрое VPN-решение (WireGuard/OpenVPN) и маршруты только для ТВ.</li>
+      <li>Проверьте скорость на близких к вам узлах (EU/ME).</li>
+      <li>На некоторых роутерах split-tunneling реализуется через policy-based routing.</li>
+    </ul>
+    <p>Готовые сервисы с быстрыми узлами и пробным периодом:</p>
+    <ul>
+      <li><b>Норм VPN:</b> 5 дней бесплатно, быстрые переключения стран → <a href="https://t.me/normwpn_bot?start=referral_228691787" target="_blank" rel="noopener">подключить для Smart TV</a></li>
+      <li><b>SAFENET VPN:</b> 3 дня теста и −15% на первую оплату → <a href="https://t.me/SafeNetVpn_bot?start=afrrica" target="_blank" rel="noopener">стабильный 4K-стриминг</a></li>
+    </ul>
+
+    <h2>Способ 5. «Раздаём» интернет с ПК с обходом DPI</h2>
+    <p>Если роутер «не умеет», можно запустить обход DPI на ПК и раздать интернет на ТВ.</p>
+    <ol>
+      <li>Windows: установите <b>GoodbyeDPI</b> или <b>Zapret</b>, проверьте YouTube в браузере.</li>
+      <li>Включите мобильную точку доступа/раздачу по Ethernet и подключите к ней ТВ.</li>
+      <li>Проверьте работу в SmartTube/официальном приложении.</li>
+    </ol>
+
+    <h2>Способ 6. Chromecast / AirPlay / DLNA — транслируем с телефона</h2>
+    <p>Даже при проблемах на ТВ можно отправлять видео с телефона/ПК. На телефоне примените DoH/WARP, затем «Трансляция» на ТВ. На ПК — вкладка Chrome → Cast.</p>
+
+    <h2>Таблица быстрых решений по брендам</h2>
+    <table>
+      <thead>
+        <tr><th>Платформа ТВ</th><th>Что сделать сначала</th><th>Если не помогло</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><b>Android TV / Google TV</b></td><td>SmartTube + 5 ГГц; DNS от роутера</td><td>SmartDNS/DoH на роутере, затем VPN-split</td></tr>
+        <tr><td><b>Samsung (Tizen)</b></td><td>Ручной DNS 1.1.1.1 / 8.8.8.8</td><td>SmartDNS на роутере или приставка Android TV</td></tr>
+        <tr><td><b>LG (webOS)</b></td><td>Ручной DNS 1.1.1.1</td><td>SmartDNS/DoH на роутере, при необходимости VPN-policy</td></tr>
+        <tr><td><b>Старые Smart TV</b></td><td>Приставка Android TV (Mi Box/Stick)</td><td>SmartDNS на роутере или split-VPN для приставки</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Оптимизация сети дома: чтобы 4K шёл без буфера</h2>
+    <ul>
+      <li>Переведите ТВ на 5 ГГц или Ethernet; отключите старые 2,4 ГГц устройства от той же точки.</li>
+      <li>В роутере включите QoS/SQM (cake/fq_codel), чтобы торренты/обновления не душили стримы.</li>
+      <li>Обновите прошивку роутера и SmartTube/официальное приложение.</li>
+      <li>Используйте каналы 36/40/44/48; избегайте зашумлённых DFS, если рядом аэропорты/радар.</li>
+    </ul>
+
+    <h2>FAQ — YouTube на Smart TV в 2025</h2>
+    <details>
+      <summary>Что попробовать в первую очередь на телевизоре?</summary>
+      <div>Для Android TV — поставить SmartTube и подключить 5 ГГц. Для Samsung/LG — ручной DNS 1.1.1.1, лучше — SmartDNS на роутере для всей сети.</div>
+    </details>
+    <details>
+      <summary>SmartTube безопасно использовать?</summary>
+      <div>Да, при установке с официальных источников проекта. Обновляйте приложение и не используйте «левые» сборки.</div>
+    </details>
+    <details>
+      <summary>Почему 4K тормозит, а 1080p идёт?</summary>
+      <div>Недостаточная пропускная способность или буферблоат. Подключите Ethernet/5 ГГц, включите SQM на роутере, проверьте, что никто не грузит сеть параллельно.</div>
+    </details>
+    <details>
+      <summary>Достаточно ли просто сменить DNS на ТВ?</summary>
+      <div>Иногда да, но при DPI-фильтрации понадобится SmartDNS на роутере или split-VPN только для ТВ/YouTube.</div>
+    </details>
+    <details>
+      <summary>Можно ли без VPN вообще?</summary>
+      <div>Часто достаточно SmartDNS/DoH + SmartTube. Но если провайдер жёстко ограничивает медиадомены — нужен VPN с разделённым туннелем.</div>
+    </details>
+    <details>
+      <summary>У меня приставка Android TV — что лучше?</summary>
+      <div>SmartTube как основной клиент, DNS на уровне роутера, при необходимости policy-routing VPN только для приставки.</div>
+    </details>
+    <details>
+      <summary>ТВ старый, приложений нет — как быть?</summary>
+      <div>Возьмите недорогую приставку Android TV/Google TV и подключите по HDMI — получите все методы из этого гайда.</div>
+    </details>
+    <details>
+      <summary>Почему поиск/комментарии не грузятся, а видео идёт?</summary>
+      <div>Часто блокируются домены <i>ytimg</i>. Включите DoH/SmartDNS или SmartTube с актуальной версией.</div>
+    </details>
+    <details>
+      <summary>Как настроить VPN на роутере «частично»?</summary>
+      <div>На поддерживаемых моделях используйте policy-based routing: в политику добавьте IP ТВ/приставки или домены YouTube. Остальной трафик оставьте напрямую.</div>
+    </details>
+    <details>
+      <summary>Chromecast/AirPlay лагает — почему?</summary>
+      <div>Слабый Wi-Fi или перегруженный канал. Перейдите на 5 ГГц, сократите расстояние, отключите «энергосбережение» у ТВ/роутера.</div>
+    </details>
+    <details>
+      <summary>Запрещено ли это?</summary>
+      <div>Настройки DNS, SmartDNS и использование альтернативных приложений не нарушают правила использования ТВ. Следуйте законам вашей страны и условиям платформ.</div>
+    </details>
+
+    <div class="topics-links">
+      <b>Читайте также:</b>
+      <ul>
+        <li><a href="/articles/youtube-bez-vpn-russia-15-sposobov-2025.html">YouTube без VPN в России — 15 способов (2025)</a></li>
+        <li><a href="/articles/kak-uskorit-youtube-russia-2025.html">Как ускорить YouTube в России — без зависаний</a></li>
+        <li><a href="/articles/youtube-telefon-bez-vpn-android-iphone.html">YouTube на телефоне без VPN — Android и iPhone</a></li>
+        <li><a href="/articles/obhod-blokirovki-youtube-tehnicheskie-sposoby.html">Обход блокировки YouTube — технические способы</a></li>
+        <li><a href="/articles/alternativy-youtube-russia-2025.html">Альтернативы YouTube в России (2025)</a></li>
+      </ul>
+    </div>
+
+    <a class="back-link" href="../index.html">На главную</a>
+  </main>
+
+  <footer>
+    © 2025 VPNhub-Cyber
+  </footer>
+</body>
+</html>
