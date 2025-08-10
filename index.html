@@ -1,237 +1,115 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="icon" href="/favicon.png" type="image/png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <title>ВПН для всех: как выбрать лучший VPN сервис в 2025 году</title>
   <meta name="description" content="VPN — это просто! Узнай, что такое VPN, зачем он нужен, как выбрать лучший сервис для России в 2025 году. Рейтинг, плюсы, установка, бесплатные и платные варианты.">
+
+  <link rel="canonical" href="https://vpnhub-cyber.github.io/">
+  <link rel="icon" href="/favicon.png" type="image/png">
   <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ВПН для всех: как выбрать лучший VPN сервис в 2025 году">
+  <meta property="og:description" content="VPN — это просто! Что такое VPN, зачем нужен и как выбрать лучший сервис для России в 2025. Рейтинг, плюсы, установка, бесплатные и платные варианты.">
+  <meta property="og:url" content="https://vpnhub-cyber.github.io/">
+  <meta property="og:image" content="https://vpnhub-cyber.github.io/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "url":"https://vpnhub-cyber.github.io/",
+    "name":"VPNhub-Cyber",
+    "potentialAction":{
+      "@type":"SearchAction",
+      "target":"https://vpnhub-cyber.github.io/all-articles.html?q={search_term_string}",
+      "query-input":"required name=search_term_string"
+    }
+  }
+  </script>
+
   <style>
-    body {
-      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
-      color: #e0e6ff;
-      font-family: 'Montserrat', Arial, sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    header {
-      text-align: center;
-      padding: 65px 20px 25px 20px;
-      position: relative;
-      z-index: 1;
-    }
-    h1 {
-      font-family: 'Russo One', Arial, sans-serif;
-      font-size: 2.35rem;
-      color: #a0c7ff;
-      margin-bottom: 18px;
-      letter-spacing: 1.5px;
-      text-shadow: 0 0 15px #3e5ee9, 0 0 25px #283593;
-      animation: glow 2s infinite alternate;
-    }
-    @keyframes glow {
-      from { text-shadow: 0 0 15px #3e5ee9, 0 0 25px #283593;}
-      to { text-shadow: 0 0 35px #60aaff, 0 0 60px #4fc3f7;}
-    }
-    .cosmo {
-      font-size: 1.2rem;
-      margin-bottom: 17px;
-      color: #fffde4;
-      font-weight: 400;
-      text-shadow: 0 0 8px #232c47;
-      line-height: 1.7;
-    }
-    .planet {
-      font-size: 3.5rem;
-      animation: float 5s infinite linear;
-      filter: drop-shadow(0 0 20px #5c98ff);
-      margin-bottom: 10px;
-    }
-    @keyframes float {
-      0% { transform: translateY(0);}
-      50% { transform: translateY(-20px);}
-      100% { transform: translateY(0);}
-    }
-    .vpn-list {
-      max-width: 630px;
-      margin: 0 auto 2.5em auto;
-      background: rgba(31, 44, 75, 0.90);
-      border-radius: 2rem;
-      box-shadow: 0 4px 36px #243768aa;
-      padding: 2.2em 1.5em 2.4em 1.5em;
-      display: flex;
-      flex-direction: column;
-      gap: 2em;
-      border: 2px solid #354a7c;
-    }
-    .vpn-card {
-      background: linear-gradient(90deg, #222d4c 85%, #347bca 100%);
-      border-radius: 1.3em;
-      padding: 1.3em 1em;
-      box-shadow: 0 2px 14px #0008;
-      display: flex;
-      flex-direction: column;
-      gap: 0.2em;
-      transition: transform 0.22s, box-shadow 0.22s;
-      border: 1.5px solid #364bb0;
-    }
-    .vpn-card:hover {
-      transform: scale(1.03);
-      box-shadow: 0 8px 32px #1ddcff66;
-      border-color: #5bbcff;
-    }
-    .vpn-title {
-      font-family: 'Russo One', Arial, sans-serif;
-      font-size: 1.21rem;
-      color: #e3eeff;
-      margin-bottom: 6px;
-      letter-spacing: 1.1px;
-    }
-    .vpn-desc {
-      font-size: 1.01rem;
-      margin-bottom: 14px;
-      color: #b2d0fa;
-      min-height: 45px;
-      line-height: 1.6;
-    }
-    .vpn-price {
-      margin-bottom: 9px;
-      color: #ffe277;
-      font-weight: bold;
-      font-size: 1.05rem;
-    }
-    .vpn-link {
-      display: inline-block;
-      background: linear-gradient(90deg, #4776e6 20%, #8e54e9 80%);
-      color: #fff;
-      font-weight: 700;
-      padding: 11px 32px;
-      border-radius: 1.2rem;
-      font-size: 1.05rem;
-      text-decoration: none;
-      box-shadow: 0 4px 18px #303f8e77;
-      letter-spacing: 1px;
-      transition: background 0.19s, box-shadow 0.19s, transform 0.15s;
-      margin-top: 4px;
-    }
-    .vpn-link:hover {
-      background: linear-gradient(90deg, #8e54e9 10%, #4776e6 90%);
-      box-shadow: 0 8px 32px #82e2fd88;
-      transform: scale(1.06);
-    }
-    main {
-      max-width: 680px;
-      margin: 0 auto;
-      padding: 0 16px 38px 16px;
-    }
-    .seo-block {
-      background: rgba(25,28,48,0.95);
-      border-radius: 1.5em;
-      padding: 2em 1.5em 1.1em 1.5em;
-      margin-bottom: 2.1em;
-      box-shadow: 0 1px 8px #0007;
-    }
-    .articles {
-      text-align: center;
-      margin-top: 2.4em;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      padding-bottom: 36px;
-    }
-    .article-btn {
-      background: linear-gradient(90deg, #36f6ff 20%, #a975ff 90%);
-      color: #222;
-      font-size: 1.06em;
-      font-weight: 700;
-      border: none;
-      border-radius: 2em;
-      padding: 12px 36px;
-      margin: 0 8px;
-      cursor: pointer;
-      box-shadow: 0 2px 10px #0007;
-      opacity: 0.92;
-      transition: background 0.2s, color 0.15s, transform 0.2s;
-      outline: none;
-    }
-    .article-btn:hover {
-      background: linear-gradient(90deg, #a975ff 20%, #36f6ff 90%);
-      color: #fff;
-      transform: scale(1.05);
-      opacity: 1;
-    }
-    footer {
-      text-align: center;
-      padding: 32px 10px 12px 10px;
-      color: #475674;
-      font-size: 0.97rem;
-      letter-spacing: 0.2px;
-    }
+    body {background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%); color: #e0e6ff; font-family: 'Montserrat', Arial, sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden;}
+    header { text-align: center; padding: 65px 20px 25px 20px; position: relative; z-index: 1;}
+    h1 { font-family: 'Russo One', Arial, sans-serif; font-size: 2.35rem; color: #a0c7ff; margin-bottom: 18px; letter-spacing: 1.5px; text-shadow: 0 0 15px #3e5ee9, 0 0 25px #283593; animation: glow 2s infinite alternate;}
+    @keyframes glow {from { text-shadow: 0 0 15px #3e5ee9, 0 0 25px #283593;} to { text-shadow: 0 0 35px #60aaff, 0 0 60px #4fc3f7;}}
+    .cosmo { font-size: 1.2rem; margin-bottom: 17px; color: #fffde4; font-weight: 400; text-shadow: 0 0 8px #232c47; line-height: 1.7;}
+    .planet { font-size: 3.5rem; animation: float 5s infinite linear; filter: drop-shadow(0 0 20px #5c98ff); margin-bottom: 10px;}
+    @keyframes float {0%{transform:translateY(0)}50%{transform:translateY(-20px)}100%{transform:translateY(0)}}
+
+    .vpn-list { max-width: 630px; margin: 0 auto 2.5em auto; background: rgba(31, 44, 75, 0.90); border-radius: 2rem; box-shadow: 0 4px 36px #243768aa; padding: 2.2em 1.5em 2.4em 1.5em; display: flex; flex-direction: column; gap: 2em; border: 2px solid #354a7c;}
+    .vpn-card { background: linear-gradient(90deg, #222d4c 85%, #347bca 100%); border-radius: 1.3em; padding: 1.3em 1em; box-shadow: 0 2px 14px #0008; display: flex; flex-direction: column; gap: 0.2em; transition: transform .22s, box-shadow .22s; border: 1.5px solid #364bb0;}
+    .vpn-card:hover { transform: scale(1.03); box-shadow: 0 8px 32px #1ddcff66; border-color: #5bbcff;}
+    .vpn-title { font-family:'Russo One',Arial,sans-serif; font-size: 1.21rem; color:#e3eeff; margin-bottom:6px; letter-spacing:1.1px;}
+    .vpn-desc { font-size: 1.01rem; margin-bottom: 14px; color: #b2d0fa; min-height: 45px; line-height: 1.6;}
+    .vpn-price { margin-bottom: 9px; color: #ffe277; font-weight: bold; font-size: 1.05rem;}
+    .vpn-link { display:inline-block; background: linear-gradient(90deg, #4776e6 20%, #8e54e9 80%); color:#fff; font-weight:700; padding:11px 32px; border-radius:1.2rem; font-size:1.05rem; text-decoration:none; box-shadow:0 4px 18px #303f8e77; letter-spacing:1px; transition: background .19s, box-shadow .19s, transform .15s; margin-top: 4px;}
+    .vpn-link:hover { background: linear-gradient(90deg, #8e54e9 10%, #4776e6 90%); box-shadow:0 8px 32px #82e2fd88; transform: scale(1.06);}
+
+    main { max-width: 680px; margin: 0 auto; padding: 0 16px 38px 16px;}
+    .seo-block { background: rgba(25,28,48,0.95); border-radius: 1.5em; padding: 2em 1.5em 1.1em 1.5em; margin-bottom: 2.1em; box-shadow: 0 1px 8px #0007;}
+
+    /* Новая лента последних статей */
+    .latest-wrap{margin-top:28px;background:rgba(25,28,48,.95);border-radius:1.5em;padding:1.2em}
+    .latest-title{font-family:'Russo One',Arial,sans-serif;color:#ffe08a;margin:0 0 .6em 6px;letter-spacing:.4px}
+    .latest-strip{display:flex;gap:12px;overflow-x:auto;padding:6px 4px 10px 6px;scroll-snap-type:x mandatory}
+    .latest-card{min-width:280px;max-width:280px;background:linear-gradient(90deg,#36f6ff 20%,#a975ff 90%);color:#111;border-radius:16px;padding:11px 12px;text-decoration:none;box-shadow:0 2px 10px #0007;scroll-snap-align:start}
+    .latest-card b{display:block;color:#111;margin-bottom:6px}
+    .latest-card time{display:block;font-size:.86rem;color:#17324a;opacity:.85}
+    .latest-actions{text-align:center;margin-top:8px}
+    .article-btn { background: linear-gradient(90deg, #36f6ff 20%, #a975ff 90%); color: #222; font-size: 1.06em; font-weight: 700; border: none; border-radius: 2em; padding: 12px 36px; cursor: pointer; box-shadow: 0 2px 10px #0007; opacity: .92; text-decoration:none; display:inline-block}
+    .article-btn:hover { background: linear-gradient(90deg, #a975ff 20%, #36f6ff 90%); color:#fff; opacity:1; transform: scale(1.03);}
+
+    footer { text-align: center; padding: 32px 10px 12px 10px; color: #475674; font-size: 0.97rem; letter-spacing: 0.2px;}
+
     /* Космические звёзды */
-    .stars {
-      position: fixed;
-      top: 0; left: 0; width: 100vw; height: 100vh;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-    .stars span {
-      position: absolute;
-      background: #fff;
-      border-radius: 100%;
-      opacity: .65;
-      animation: twinkle 5s infinite alternate;
-    }
-    @keyframes twinkle {
-      from { opacity: .45;}
-      to { opacity: 1;}
-    }
-    @media (max-width: 700px) {
-      .vpn-list { padding: 1em 0.5em; }
-      .vpn-cards { flex-direction: column; gap: 28px; }
-      header { padding-top: 36px;}
-      .planet { font-size: 2.2rem;}
-      h1 { font-size: 1.2rem;}
-    }
+    .stars { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; pointer-events: none; overflow: hidden;}
+    .stars span { position: absolute; background: #fff; border-radius: 100%; opacity: .65; animation: twinkle 5s infinite alternate;}
+    @keyframes twinkle { from { opacity: .45;} to { opacity: 1;} }
+    @media (max-width: 700px) { .vpn-list{padding:1em .5em} header{padding-top:36px} .planet{font-size:2.2rem} h1{font-size:1.2rem} .latest-card{min-width:240px;max-width:240px}}
   </style>
+
   <!-- Yandex.Metrika counter -->
-<script type="text/javascript">
+  <script type="text/javascript">
     (function(m,e,t,r,i,k,a){
         m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
         m[i].l=1*new Date();
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103602117', 'ym');
-
     ym(103602117, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true});
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/103602117" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/103602117" style="position:absolute; left:-9999px;" alt=""></div></noscript>
+  <!-- /Yandex.Metrika counter -->
 </head>
 <body>
   <div class="stars">
-    <span style="width:2px; height:2px; left:5vw; top:18vh; animation-delay:1s;"></span>
-    <span style="width:3px; height:3px; left:19vw; top:28vh; animation-delay:2s;"></span>
-    <span style="width:1.2px; height:1.2px; left:29vw; top:15vh; animation-delay:.7s;"></span>
-    <span style="width:2px; height:2px; left:55vw; top:13vh; animation-delay:.9s;"></span>
-    <span style="width:2.7px; height:2.7px; left:73vw; top:21vh; animation-delay:2.2s;"></span>
-    <span style="width:1.3px; height:1.3px; left:86vw; top:9vh; animation-delay:3s;"></span>
-    <span style="width:2.2px; height:2.2px; left:77vw; top:31vh; animation-delay:1.6s;"></span>
-    <span style="width:2.6px; height:2.6px; left:11vw; top:78vh; animation-delay:1.2s;"></span>
-    <span style="width:2.3px; height:2.3px; left:34vw; top:89vh; animation-delay:.4s;"></span>
-    <span style="width:2.2px; height:2.2px; left:51vw; top:93vh; animation-delay:.6s;"></span>
-    <span style="width:2px; height:2px; left:61vw; top:78vh; animation-delay:1.1s;"></span>
-    <span style="width:3px; height:3px; left:86vw; top:85vh; animation-delay:2.4s;"></span>
-    <span style="width:2.7px; height:2.7px; left:95vw; top:69vh; animation-delay:2.7s;"></span>
-    <span style="width:1.3px; height:1.3px; left:22vw; top:44vh; animation-delay:.8s;"></span>
-    <span style="width:1.8px; height:1.8px; left:59vw; top:52vh; animation-delay:.9s;"></span>
-    <span style="width:1.4px; height:1.4px; left:17vw; top:72vh; animation-delay:1.7s;"></span>
-    <span style="width:2px; height:2px; left:67vw; top:61vh; animation-delay:.5s;"></span>
-    <span style="width:2.5px; height:2.5px; left:43vw; top:65vh; animation-delay:1.3s;"></span>
+    <span style="width:2px;height:2px;left:5vw;top:18vh;animation-delay:1s"></span>
+    <span style="width:3px;height:3px;left:19vw;top:28vh;animation-delay:2s"></span>
+    <span style="width:1.2px;height:1.2px;left:29vw;top:15vh;animation-delay:.7s"></span>
+    <span style="width:2px;height:2px;left:55vw;top:13vh;animation-delay:.9s"></span>
+    <span style="width:2.7px;height:2.7px;left:73vw;top:21vh;animation-delay:2.2s"></span>
+    <span style="width:1.3px;height:1.3px;left:86vw;top:9vh;animation-delay:3s"></span>
+    <span style="width:2.2px;height:2.2px;left:77vw;top:31vh;animation-delay:1.6s"></span>
+    <span style="width:2.6px;height:2.6px;left:11vw;top:78vh;animation-delay:1.2s"></span>
+    <span style="width:2.3px;height:2.3px;left:34vw;top:89vh;animation-delay:.4s"></span>
+    <span style="width:2.2px;height:2.2px;left:51vw;top:93vh;animation-delay:.6s"></span>
+    <span style="width:2px;height:2px;left:61vw;top:78vh;animation-delay:1.1s"></span>
+    <span style="width:3px;height:3px;left:86vw;top:85vh;animation-delay:2.4s"></span>
+    <span style="width:2.7px;height:2.7px;left:95vw;top:69vh;animation-delay:2.7s"></span>
+    <span style="width:1.3px;height:1.3px;left:22vw;top:44vh;animation-delay:.8s"></span>
+    <span style="width:1.8px;height:1.8px;left:59vw;top:52vh;animation-delay:.9s"></span>
+    <span style="width:1.4px;height:1.4px;left:17vw;top:72vh;animation-delay:1.7s"></span>
+    <span style="width:2px;height:2px;left:67vw;top:61vh;animation-delay:.5s"></span>
+    <span style="width:2.5px;height:2.5px;left:43vw;top:65vh;animation-delay:1.3s"></span>
   </div>
+
   <header>
     <div class="planet">🪐</div>
     <h1>ВПН для всех: как выбрать лучший VPN сервис в 2025 году</h1>
@@ -250,7 +128,7 @@
         <b>3 дня бесплатно</b> — тестируйте без ограничений!
       </div>
       <div class="vpn-price">126 ₽ в месяц &nbsp;|&nbsp; 849 ₽ в год</div>
-      <a class="vpn-link" href="https://t.me/SafeNetVpn_bot?start=afrrica" target="_blank" rel="noopener">Попробовать SAFENET</a>
+      <a class="vpn-link" href="https://t.me/SafeNetVpn_bot?start=afrrica" target="_blank" rel="nofollow sponsored noopener">Попробовать SAFENET</a>
     </div>
     <div class="vpn-card">
       <div class="vpn-title">🛰️ Норм VPN — быстрый и защищённый</div>
@@ -259,7 +137,7 @@
         <b>Надёжное шифрование</b> — ваши данные под максимальной защитой.<br>
         Минимум кликов — максимум анонимности.
       </div>
-      <a class="vpn-link" href="https://t.me/normwpn_bot?start=referral_228691787" target="_blank" rel="noopener">Перейти к Норм VPN</a>
+      <a class="vpn-link" href="https://t.me/normwpn_bot?start=referral_228691787" target="_blank" rel="nofollow sponsored noopener">Перейти к Норм VPN</a>
     </div>
   </div>
 
@@ -268,51 +146,50 @@
       <p><b>VPN</b> — это простой и надёжный способ получить доступ к любым сайтам и приложениям, даже если они заблокированы. С помощью VPN можно скрыть свой IP-адрес, обойти блокировки, повысить безопасность в интернете и защитить личные данные от слежки. Мы расскажем, как выбрать лучший VPN сервис, какие есть бесплатные и платные варианты, и как быстро начать пользоваться VPN на любых устройствах.</p>
       <p>VPN-сервисы работают на компьютере, телефоне и даже роутере. Неважно, нужен вам VPN для YouTube, для соцсетей, для работы или просто для анонимности — здесь вы найдёте понятные инструкции, реальные отзывы и советы по выбору VPN.</p>
     </div>
-<section class="articles">
-  <div class="articles-title">
-    Все актуальные статьи и инструкции по VPN:
-  </div>
-  <a class="article-btn" href="articles/free-vpn-guide-2025.html">Гид по бесплатным VPN 2025</a>
-  <a class="article-btn" href="articles/free-vpn-services-2025.html">15 бесплатных VPN без ограничений</a>
-  <a class="article-btn" href="articles/how-to-check-vpn-leaks.html">Как проверить VPN на утечки</a>
-  <a class="article-btn" href="articles/how-to-choose-vpn-2025.html">Как выбрать VPN в 2025 году</a>
-  <a class="article-btn" href="articles/how-vpn-works.html">Как работает VPN</a>
-  <a class="article-btn" href="articles/vpn-blocked.html">VPN заблокирован: что делать?</a>
-  <a class="article-btn" href="articles/vpn-browser-extensions-2025.html">VPN-расширения для браузера 2025</a>
-  <a class="article-btn" href="articles/vpn-bypass-blocks-2025.html">Как обойти блокировки VPN в 2025</a>
-  <a class="article-btn" href="articles/vpn-bypass-blocks.html">Обход блокировок с помощью VPN</a>
-  <a class="article-btn" href="articles/vpn-bypass-restrictions-2025.html">VPN против ограничений: рабочие методы</a>
-  <a class="article-btn" href="articles/vpn-disconnects-2025.html">VPN отключается: как стабилизировать связь</a>
-  <a class="article-btn" href="articles/vpn-dlya-android.html">VPN для Android: настройка и лучшие приложения</a>
-  <a class="article-btn" href="articles/vpn-dlya-windows.html">VPN для Windows: простое руководство</a>
-  <a class="article-btn" href="articles/vpn-doesnt-work-2025.html">VPN не работает: что делать?</a>
-  <a class="article-btn" href="articles/vpn-doesnt-work.html">Проблемы с VPN: решения 2025</a>
-  <a class="article-btn" href="articles/vpn-for-banking-2025.html">VPN для банковских операций</a>
-  <a class="article-btn" href="articles/vpn-for-business-2025.html">VPN для бизнеса и удалённой работы</a>
-  <a class="article-btn" href="articles/vpn-for-gaming.html">VPN для игр: стабильный пинг и скорость</a>
-  <a class="article-btn" href="articles/vpn-for-ios.html">VPN для iOS и iPhone</a>
-  <a class="article-btn" href="articles/vpn-for-linux-2025.html">VPN для Linux: настройка и советы</a>
-  <a class="article-btn" href="articles/vpn-for-mac-2025.html">VPN для Mac: установка и сравнение</a>
-  <a class="article-btn" href="articles/vpn-for-macos-2025.html">VPN для MacOS в 2025</a>
-  <a class="article-btn" href="articles/vpn-for-online-payments-2025.html">VPN для онлайн-платежей</a>
-  <a class="article-btn" href="articles/vpn-for-smartphone-2025.html">VPN для смартфона: как выбрать</a>
-  <a class="article-btn" href="articles/vpn-for-social-media-2025.html">VPN для соцсетей</a>
-  <a class="article-btn" href="articles/vpn-for-students-school-2025.html">VPN для студентов и школ</a>
-  <a class="article-btn" href="articles/vpn-for-torrents-2025.html">VPN для торрентов: безопасность в 2025</a>
-  <a class="article-btn" href="articles/vpn-for-windows-2025.html">VPN для Windows 2025: лучшие варианты</a>
-  <a class="article-btn" href="articles/vpn-for-youtube-2025.html">VPN для YouTube: смотреть без блокировок</a>
-  <a class="article-btn" href="articles/vpn-no-connection-guide.html">VPN не подключается: пошаговый гайд</a>
-  <a class="article-btn" href="articles/vpn-on-router-2025.html">VPN на роутере: инструкция 2025</a>
-  <a class="article-btn" href="articles/vpn-online-security-2025.html">VPN для онлайн-безопасности</a>
-  <a class="article-btn" href="articles/vpn-slow-speed-fix.html">VPN медленно работает: как ускорить</a>
-  <a class="article-btn" href="articles/vpn-vs-proxy.html">VPN или прокси: что лучше?</a>
-  <a class="article-btn" href="articles/what-is-vpn-2025.html">Что такое VPN простыми словами</a>
-  <a class="article-btn" href="articles/why-vpn-needed-2025.html">Зачем нужен VPN в 2025</a>
-  <a class="article-btn" href="articles/youtube-without-vpn-russia-2025.html">YouTube без VPN в России: рабочие способы</a>
-</section>
+
+    <!-- Новая компактная лента -->
+    <section class="latest-wrap">
+      <div class="latest-title">Свежие публикации</div>
+      <div class="latest-strip" id="latestStrip" aria-label="Последние статьи"></div>
+      <div class="latest-actions">
+        <a class="article-btn" href="/all-articles.html">Все статьи</a>
+      </div>
+      <noscript>
+        <p style="text-align:center;margin-top:10px">
+          JavaScript отключён. Смотрите <a href="/all-articles.html">все статьи</a>.
+        </p>
+      </noscript>
+    </section>
   </main>
+
   <footer>
-    © 2025 VPNhub-Cyber &middot; Связь: <a href="mailto:admin@vpnhub-cyber.ru" style="color:#6abfff;text-decoration:none;">admin@vpnhub-cyber.ru</a>
+    © 2025 VPNhub-Cyber · <a href="/all-articles.html" style="color:#6abfff">Все статьи</a> ·
+    <a href="/articles/2025.html" style="color:#6abfff">Статьи 2025</a> ·
+    Связь: <a href="mailto:admin@vpnhub-cyber.ru" style="color:#6abfff;text-decoration:none;">admin@vpnhub-cyber.ru</a>
   </footer>
+
+  <!-- Подтяжка последних статей из RSS -->
+  <script>
+  (async () => {
+    try {
+      const res = await fetch('/rss.xml', {cache:'no-store'});
+      const xmlText = await res.text();
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(xmlText, 'application/xml');
+      const items = Array.from(xml.querySelectorAll('channel > item')).slice(0, 10);
+      const strip = document.getElementById('latestStrip');
+      items.forEach(it => {
+        const a = document.createElement('a');
+        a.className = 'latest-card';
+        const href = new URL(it.querySelector('link').textContent);
+        a.href = href.pathname; // относительная ссылка
+        const title = it.querySelector('title')?.textContent || 'Без названия';
+        const date  = it.querySelector('pubDate')?.textContent || '';
+        a.innerHTML = `<b>${title}</b><time>${date}</time>`;
+        strip.appendChild(a);
+      });
+    } catch(e) { /* без ошибок в консоль */ }
+  })();
+  </script>
 </body>
 </html>
