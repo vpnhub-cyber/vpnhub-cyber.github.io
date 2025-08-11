@@ -1,0 +1,37 @@
+name: daily-dates
+on:
+  schedule:
+    - cron: '5 21 * * *'   # 00:05 по Москве (MSK=UTC+3)
+  workflow_dispatch:
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { token: ${{ secrets.GITHUB_TOKEN }} }
+
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+
+      - name: Install deps
+        run: pip install tzdata
+
+      - name: Update dates in all pages
+        run: python tools/update_daily_dates.py
+
+      - name: Rebuild sitemap & RSS (optional)
+        run: |
+          python tools/build_sitemap_and_rss.py || true
+
+      - name: Commit only if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain)" ]; then
+            git add -A
+            git commit -m "chore: daily date refresh"
+            git push
+          else
+            echo "No changes"
+          fi
