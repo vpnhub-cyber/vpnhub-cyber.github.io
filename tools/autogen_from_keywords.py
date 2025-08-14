@@ -1,220 +1,306 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Автоген страниц из CSV (по одной за цикл) с мгновенной публикацией.
+
+Ожидаемый CSV: content/keywords.csv в UTF-8 без BOM
+Колонки (порядок важен):
+  0 enabled         - "yes" чтобы брать в работу, иначе пропуск
+  1 keyword         - ключевая фраза (для текста/семантики)
+  2 title           - <title> и H1
+  3 slug            - имя файла без .html (уникально!)
+  4 done            - "0" или "1" (будет проставлено "1" после публикации)
+  5 description     - (необязательно) meta description; если пусто — сгенерируем
+
+Скрипт:
+- Создаёт /articles, рендерит HTML по шаблону «в стиле сайта».
+- Вставляет ТОЛЬКО одну кнопку SAFENET (в начале и в конце статьи).
+- После записи файла: коммитит и пушит сразу (по одной странице).
+- Обновляет CSV (done=1) и коммитит это изменение.
+- Пауза 60 секунд и берём следующую строку.
+"""
+
+import csv
 import os
 import re
-import csv
+import sys
 import time
 import subprocess
-from datetime import datetime
 from pathlib import Path
+from datetime import datetime
 
-from unidecode import unidecode
-from slugify import slugify
-from openai import OpenAI
+REPO_ROOT = Path(__file__).resolve().parents[1]
+CSV_PATH   = REPO_ROOT / "content" / "keywords.csv"
+OUT_DIR    = REPO_ROOT / "articles"
+DONE_MARK  = "1"
+PAUSE_SEC  = 60
 
-# ==== Настройки ====
-CSV_PATH = Path("content/keywords.csv")
-OUT_DIR = Path(".")              # корень сайта (страницы как earlier: slug.html)
-MARK_DIR = Path(".autogen")      # метки "сделано", чтобы безопасно перезапускать
-SITEMAP_PATH = Path("sitemap.xml")  # если у тебя своя сборка — можно отключить обновление
-PAUSE_SECONDS = 60               # пауза между публикациями
-MIN_WORDS = 900                  # целевой объём (примерно)
-# ====================
+YANDEX_METRIKA_ID = "103602117"
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
-MODEL_ID = (os.environ.get("MODEL_ID") or os.environ.get("FALLBACK_MODEL_ID") or "gpt-4.1-mini").strip()
+SAFENET_BTN_HTML = (
+    '<a class="vpn-btn" href="https://t.me/SafeNetVpn_bot?start=afrrica" '
+    'target="_blank" rel="nofollow noopener sponsored">'
+    'SAFENET: стабильный YouTube 1080p/4K — 3 дня теста и −15% на 1-ю оплату'
+    '</a>'
+)
 
-if not OPENAI_API_KEY:
-    raise SystemExit("OPENAI_API_KEY is empty (add it in repo Settings → Secrets → Actions).")
+def run(cmd, cwd=REPO_ROOT):
+    """Run a shell command, raise on error, return output."""
+    print("+", " ".join(cmd))
+    out = subprocess.check_output(cmd, cwd=str(cwd))
+    return out.decode("utf-8", "ignore")
 
-client = OpenAI(api_key=OPENAI_API_KEY)
+def ensure_git_identity():
+    """Set bot identity if not set (safe default for Actions)."""
+    try:
+        run(["git", "config", "--global", "user.name"])
+    except subprocess.CalledProcessError:
+        run(["git", "config", "user.name", "github-actions[bot]"])
+        run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"])
 
-MARK_DIR.mkdir(exist_ok=True)
-OUT_DIR.mkdir(exist_ok=True, parents=True)
-
-def norm(s: str) -> str:
-    return re.sub(r"\s+", " ", (s or "").strip().lower())
-
-def make_slug(base: str) -> str:
-    base = base or ""
-    # сначала unidecode для корректного транслита, затем slugify
-    ascii_title = unidecode(base)
-    s = slugify(ascii_title, lowercase=True, max_length=120)
+def sanitize_slug(s: str) -> str:
+    s = s.strip().lower()
+    s = s.replace(" ", "-")
+    s = re.sub(r"[^a-z0-9\-]+", "-", s)
     s = re.sub(r"-{2,}", "-", s).strip("-")
-    return s or datetime.utcnow().strftime("page-%Y%m%d-%H%M%S")
+    return s or "page"
 
-def html_template(title: str, description: str, body_html: str) -> str:
-    now_iso = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+def generate_description(keyword: str, title: str) -> str:
+    base = f"{title}. Подробный гид: что это, как работает и пошаговые инструкции. Ключевое: {keyword}."
+    return base[:155]
+
+def render_html(title: str, description: str, h1: str) -> str:
+    today = datetime.utcnow().strftime("%d.%m.%Y")
     return f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
-  <title>{title}</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{title}</title>
   <meta name="description" content="{description}">
-  <link rel="canonical" href="https://{os.environ.get('GITHUB_REPOSITORY', 'example.com').split('/')[-1]}.github.io/{''}">
-  <meta property="og:type" content="article">
-  <meta property="og:title" content="{title}">
-  <meta property="og:description" content="{description}">
-  <meta property="og:site_name" content="VPNHub">
-  <meta property="article:modified_time" content="{now_iso}">
+  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){{
+        m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}}
+        m[i].l=1*new Date();
+        for (var j = 0; j < document.scripts.length; j++) {{if (document.scripts[j].src === r) {{ return; }}}}
+        k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
+    }})(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id={YANDEX_METRIKA_ID}', 'ym');
+    ym({YANDEX_METRIKA_ID}, 'init', {{ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true}});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/{YANDEX_METRIKA_ID}" style="position:absolute; left:-9999px;" alt=""></div></noscript>
+  <!-- /Yandex.Metrika counter -->
+  <style>
+    :root{{
+      --bg-main:#1b2735; --bg-deep:#090a0f; --panel: rgba(31, 44, 75, 0.93);
+      --panel-soft: rgba(25, 28, 48, 0.93); --text:#e0e6ff; --accent:#9ec5ff;
+      --brand1:#4776e6; --brand2:#8e54e9; --h2-bg: rgba(255, 232, 128, 0.10);
+      --h2-border: rgba(255, 232, 128, 0.35); --h2-color:#ffe08a;
+      --h3-color:#cfe1ff;
+    }}
+    *{{box-sizing:border-box}}
+    body {{background: radial-gradient(ellipse at bottom, var(--bg-main) 0%, var(--bg-deep) 100%); color: var(--text); font-family: 'Montserrat', Arial, sans-serif; margin: 0; min-height: 100vh; overflow-x: hidden;}}
+    header {{ text-align: center; padding: 52px 18px 22px 18px; position: relative; z-index: 1;}}
+    h1 {{ font-family: 'Russo One', Arial, sans-serif; font-size: 2.02rem; color: var(--accent); margin-bottom: 13px; letter-spacing: .6px; text-shadow: 0 0 9px #2f49ce, 0 0 14px #283593;}}
+    .cosmo {{ font-size: 1.08rem; margin-bottom: 21px; color: #fffde4; text-shadow: 0 0 6px #232c47;}}
+    main {{ max-width: 860px; margin: 0 auto; background: var(--panel); border-radius: 2rem; box-shadow: 0 4px 36px #243768aa; padding: 2em 1.3em 2.1em 1.3em; position: relative; z-index: 1;}}
+    h2 {{
+      font-family: 'Russo One', Arial, sans-serif; color: var(--h2-color); font-size: 1.18rem;
+      letter-spacing: .4px; margin: 1.7em 0 .85em 0; padding: 10px 12px; background: var(--h2-bg);
+      border-left: 4px solid var(--h2-border); border-radius: 12px; text-shadow: none;
+      -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+    }}
+    h3 {{ color: var(--h3-color); margin: 1.05em 0 .45em 0; font-size: 1.04rem; letter-spacing:.2px; text-shadow: none; -webkit-font-smoothing: antialiased; }}
+    p {{ line-height: 1.62; }}
+    ul, ol {{ margin: 1em 0 1em 1em; padding-left: 1.3em;}}
+    li {{ margin-bottom: 0.65em;}}
+    code, pre {{ background: rgba(0,0,0,0.25); padding: 2px 6px; border-radius: 6px; }}
+    pre {{ overflow: auto; padding: 10px 12px; }}
+    .vpn-buttons {{ margin: 1.3em 0 2.1em 0; display: flex; flex-direction: column; gap: 0.6em;}}
+    .vpn-btn {{ display: inline-block; background: linear-gradient(90deg, var(--brand1) 15%, var(--brand2) 85%); color: #fff; font-weight: 700; padding: 11px 30px; border-radius: 1.2rem; font-size: 1.05rem; text-decoration: none; transition: background 0.19s, box-shadow 0.19s, transform 0.15s; box-shadow: 0 4px 18px #303f8e77; letter-spacing: 1px; text-align: center;}}
+    .vpn-btn:hover {{ background: linear-gradient(90deg, var(--brand2) 10%, var(--brand1) 90%); box-shadow: 0 8px 32px #82e2fd88; color: #fff200; transform: scale(1.06);}}
+    a {{ color: #6abfff; text-decoration: underline;}}
+    .back-link {{ display: inline-block; margin-top: 2em; color: #a7f2ff; background: rgba(25,28,48,0.83); border-radius: 1.3em; padding: 10px 28px; text-decoration: none; font-size: 1.05em; transition: background .16s, color .14s;}}
+    .back-link:hover {{ background: #36f6ff; color: #20244c;}}
+    .topics-links {{ margin-top: 28px; background: var(--panel-soft); border-radius: 1.1em; padding: 1em 1.1em 1em 1.1em;}}
+    .topics-links ul {{ margin: 0; padding-left: 1.2em;}}
+    .topics-links li {{ margin-bottom: 0.5em;}}
+    details {{ background: rgba(40,50,90,0.91); margin: 0.7em 0; padding: 0.8em 1em; border-radius: 1em;}}
+    summary {{ color: var(--h2-color); font-weight: bold; font-size: 1.05em; cursor: pointer;}}
+    details[open] summary {{ color: var(--accent);}}
+    .note {{ background: rgba(255,255,255,0.07); border-left: 3px solid var(--h2-color); padding: 10px 12px; border-radius: 8px; margin: 12px 0;}}
+    .warn {{ background: rgba(255, 87, 51, 0.12); border-left: 3px solid #ff8a65; padding: 10px 12px; border-radius: 8px; margin: 12px 0;}}
+    footer {{ text-align: center; padding: 30px 10px 12px 10px; color: #475674; font-size: 0.97rem; letter-spacing: 0.2px; z-index: 2; position: relative;}}
+    @media (max-width: 860px) {{ h1 {{ font-size: 1.26rem;}} main {{ padding: 1.1em 0.6em;}} }}
+  </style>
 </head>
 <body>
-<main class="container">
-  <h1>{title}</h1>
-  {body_html}
-</main>
+  <header>
+    <h1>{h1}</h1>
+    <div class="cosmo">Актуально на {today}. Краткое руководство и ответы на частые вопросы.</div>
+  </header>
+
+  <main>
+    <div class="vpn-buttons">
+      {SAFENET_BTN_HTML}
+    </div>
+
+    <div class="note"><b>Как пользоваться материалом:</b> идите сверху вниз и проверяйте результат после каждого шага.</div>
+
+    <h2>Что это даёт</h2>
+    <p>На этой странице собраны понятные шаги и рекомендации по теме «{h1}». Здесь — быстрая диагностика, практические советы и ссылки на смежные руководства.</p>
+
+    <h2>Быстрый чек-лист</h2>
+    <ol>
+      <li>Обновите приложения и перезапустите устройство/роутер.</li>
+      <li>Проверьте настройки DNS/DoH/SmartDNS и режимы энергосбережения сети.</li>
+      <li>При необходимости включите частичный VPN (split-tunnel) только для нужных сервисов.</li>
+    </ol>
+
+    <h2>Подробности</h2>
+    <p>Используйте современные протоколы, избегайте сомнительных расширений и «рандом-прокси». Для Smart TV — лучше 5 ГГц или Ethernet, а на роутере — QoS/SQM.</p>
+
+    <div class="topics-links">
+      <b>Читайте также:</b>
+      <ul>
+        <li><a href="/articles/">Все статьи раздела</a></li>
+      </ul>
+    </div>
+
+    <div class="vpn-buttons">
+      {SAFENET_BTN_HTML}
+    </div>
+
+    <a class="back-link" href="../index.html">На главную</a>
+  </main>
+
+  <footer>
+    © 2025 VPNhub-Cyber
+  </footer>
 </body>
 </html>
 """
 
-def ask_llm(keyword: str, h1: str, primary_key: str) -> str:
-    """
-    Возвращает HTML фрагмент <p>...</p><h2>...</h2>... (без <html> оболочки).
-    """
-    pk = primary_key or ""
-    # не дублируем, если совпадает по смыслу
-    use_primary = pk and norm(pk) not in {norm(keyword), norm(h1)}
-
-    system_prompt = (
-        "Ты — технический редактор. Пиши подробные статьи на русском, структурируй подзаголовками, списками, "
-        "без воды, с практическими шагами. Не добавляй ничего об авторстве и отказах от ответственности."
-    )
-    user_prompt = f"""
-Тема: «{h1 or keyword}».
-
-Задача:
-- Дай чёткое вступление (3–4 предложения). {(f'Во вступлении однажды употреби фразу: “{pk}”.' if use_primary else 'Не добавляй специальные ключевые фразы во вступление.')}
-- Дай план и раскрой блоками с подзаголовками h2/h3: как это работает, пошаговые инструкции, чек-листы, частые ошибки, FAQ.
-- Упоминай VPN-провайдеры без реф-ссылок и без явной рекламы.
-- Тон: нейтральный, полезный, без воды.
-- Объём не меньше {MIN_WORDS} слов.
-- Верни только HTML фрагмент для <body> (т.е. <p>, <h2>, <ul>, <code> и т.п.), без <html>/<head>.
-"""
-    resp = client.chat.completions.create(
-        model=MODEL_ID,
-        temperature=0.5,
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt},
-        ]
-    )
-    content = resp.choices[0].message.content.strip()
-    # На всякий — удалим случайные <html>, если модель вдруг добавит
-    content = re.sub(r"</?(html|head|body)[^>]*>", "", content, flags=re.I)
-    return content
-
-def update_sitemap(slug: str):
-    """
-    Простейший апдейт: если есть sitemap.xml — дописываем URL, если его ещё нет в файле.
-    Если у тебя есть свой сборщик карты — можно отключить.
-    """
-    if not SITEMAP_PATH.exists():
-        return
-    url = f"https://{os.environ.get('GITHUB_REPOSITORY', '').split('/')[-1]}.github.io/{slug}.html"
-    txt = SITEMAP_PATH.read_text(encoding="utf-8", errors="ignore")
-    if url in txt:
-        return
-    # грубо: вставим перед </urlset>
-    lastmod = datetime.utcnow().strftime("%Y-%m-%d")
-    entry = f"\n  <url>\n    <loc>{url}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </url>\n"
-    txt = re.sub(r"</urlset>\s*$", entry + "</urlset>", txt, flags=re.S)
-    SITEMAP_PATH.write_text(txt, encoding="utf-8")
-
-def git(*args):
-    subprocess.run(["git", *args], check=True)
-
-def commit_and_push(message: str, paths=None):
-    if paths:
-        if isinstance(paths, (list, tuple, set)):
-            for p in paths:
-                git("add", str(p))
-        else:
-            git("add", str(paths))
-    else:
-        git("add", "-A")
-    # настроим кто коммитит
-    git("config", "user.name", "github-actions[bot]")
-    git("config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
-    # rebase pull (мягкая синхронизация)
+def commit_and_push(message: str, paths):
+    if isinstance(paths, (str, Path)):
+        paths = [paths]
+    paths = [str(p) for p in paths]
+    run(["git", "add"] + paths)
+    # rebase-pull (мягкая защита от конфликтов в Actions)
     try:
-        git("pull", "--rebase", "origin", os.environ.get("GITHUB_REF_NAME", "main"))
+        run(["git", "pull", "--rebase", "origin", os.environ.get("GITHUB_REF_NAME", "main")])
     except subprocess.CalledProcessError:
-        # если кто-то только что пушнул – попробуем продолжить
+        # если не удалось — продолжаем, это не критично для пустых изменений
         pass
-    # коммитим, если есть изменения
-    res = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
-    if res.stdout.strip():
-        git("commit", "-m", message)
-        git("push", "origin", os.environ.get("GITHUB_REF_NAME", "main"))
+    run(["git", "commit", "-m", message])
+    run(["git", "push", "origin", os.environ.get("GITHUB_REF_NAME", "main")])
 
-def process_row(row: dict) -> bool:
-    """
-    Обрабатывает одну строку CSV. Возвращает True, если страница была создана/обновлена.
-    """
-    publish = (row.get("publish") or "").strip().lower() in {"yes", "y", "1", "true"}
-    if not publish:
-        return False
+def load_rows():
+    with open(CSV_PATH, "r", encoding="utf-8", newline="") as f:
+        reader = csv.reader(f)
+        rows = [row for row in reader]
+    return rows
 
-    keyword = (row.get("keyword") or "").strip()
-    h1 = (row.get("h1") or "").strip() or keyword
-    primary_key = (row.get("primary_key") or "").strip()
-    slug = (row.get("slug") or "").strip() or make_slug(keyword or h1)
-    force = (row.get("force") or "").strip().lower() in {"yes", "y", "1", "true"}
+def save_rows(rows):
+    with open(CSV_PATH, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerows(rows)
 
-    mark_file = MARK_DIR / f"{slug}.done"
-    html_path = OUT_DIR / f"{slug}.html"
+def main():
+    ensure_git_identity()
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # idempotency: если уже сделали и не force — пропускаем
-    if mark_file.exists() and not force and html_path.exists():
-        return False
+    rows = load_rows()
+    if not rows:
+        print("CSV пустой.")
+        return
 
-    # если файл существует и force==False — пропускаем, чтобы не перетирать вручную правленые страницы
-    if html_path.exists() and not force and not mark_file.exists():
-        return False
+    # Индексы колонок
+    IDX_ENABLED = 0
+    IDX_KEYWORD = 1
+    IDX_TITLE   = 2
+    IDX_SLUG    = 3
+    IDX_DONE    = 4
+    IDX_DESC    = 5 if len(rows[0]) > 5 else None
 
-    # генерим контент
-    body_html = ask_llm(keyword, h1, primary_key)
+    # защита от дублей slug внутри CSV
+    seen_slugs = set()
 
-    # description: первая строка без HTML
-    plain_intro = re.sub(r"<[^>]+>", " ", body_html)
-    plain_intro = re.sub(r"\s+", " ", plain_intro).strip()
-    description = plain_intro[:160]
+    processed_any = False
 
-    full_html = html_template(h1, description, body_html)
-    html_path.write_text(full_html, encoding="utf-8")
+    for i, row in enumerate(rows):
+        # пропустим пустые
+        if not row or all(not c.strip() for c in row):
+            continue
 
-    # простое обновление карты сайта (если есть)
-    update_sitemap(slug)
+        # расширяем до нужной длины
+        while len(row) <= 5:
+            row.append("")
 
-    # ставим метку «сделано» (для безопасных перезапусков)
-    mark_file.write_text(datetime.utcnow().isoformat(), encoding="utf-8")
+        enabled   = (row[IDX_ENABLED] or "").strip().lower()
+        keyword   = (row[IDX_KEYWORD] or "").strip()
+        title     = (row[IDX_TITLE] or "").strip() or keyword or "Новая статья"
+        slug_raw  = (row[IDX_SLUG] or "").strip()
+        done      = (row[IDX_DONE] or "").strip()
+        desc      = (row[IDX_DESC] or "").strip() if IDX_DESC is not None else ""
 
-    # коммитим только изменённое
-    commit_and_push(f"autogen: {slug}", paths=[html_path, mark_file, SITEMAP_PATH if SITEMAP_PATH.exists() else None])
+        slug = sanitize_slug(slug_raw or title)
+        row[IDX_SLUG] = slug  # нормализуем
 
-    return True
+        # дубли slug в одном CSV
+        if slug in seen_slugs:
+            print(f"Дубликат slug в CSV: {slug} — пропуск.")
+            continue
+        seen_slugs.add(slug)
 
-def iterate_csv_rows():
-    with CSV_PATH.open(newline="", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-        rows = list(reader)
+        # условия пропуска
+        if enabled != "yes":
+            print(f"[{slug}] disabled — пропуск.")
+            continue
+        if done == DONE_MARK:
+            print(f"[{slug}] уже done — пропуск.")
+            continue
 
-    # идём по порядку, но публикуем по одной за запуск скрипта
-    published = 0
-    for i, row in enumerate(rows, 1):
-        did = process_row(row)
-        if did:
-            published += 1
-            print(f"[{i}/{len(rows)}] ✓ опубликовано: {row.get('keyword') or row.get('h1')}")
-            # пауза перед следующей публикацией
-            time.sleep(PAUSE_SECONDS)
-        else:
-            print(f"[{i}/{len(rows)}] – пропуск")
+        # Если файл уже существует — считаем сделанным и отметим done
+        out_path = OUT_DIR / f"{slug}.html"
+        if out_path.exists():
+            print(f"[{slug}] файл уже существует — отмечаю done=1.")
+            rows[i][IDX_DONE] = DONE_MARK
+            save_rows(rows)
+            commit_and_push(f"mark done for existing article: {slug}", [CSV_PATH])
+            continue
 
-    if published == 0:
-        print("Новых страниц нет (всё уже сделано или publish != yes).")
+        # Сборка описания
+        meta_description = desc or generate_description(keyword, title)
+
+        # Рендер
+        html = render_html(title=title, description=meta_description, h1=title)
+        out_path.write_text(html, encoding="utf-8")
+        print(f"[{slug}] создано: {out_path.relative_to(REPO_ROOT)}")
+
+        # Коммитим страницу
+        commit_and_push(f"add article: {slug}", [out_path])
+
+        # Помечаем done=1 и коммитим CSV
+        rows[i][IDX_DONE] = DONE_MARK
+        save_rows(rows)
+        commit_and_push(f"mark done: {slug}", [CSV_PATH])
+
+        processed_any = True
+
+        # Пауза перед следующей
+        print(f"[{slug}] опубликовано. Пауза {PAUSE_SEC} сек...")
+        time.sleep(PAUSE_SEC)
+
+    if not processed_any:
+        print("Нет задач для обработки (всё done или отключено).")
 
 if __name__ == "__main__":
-    iterate_csv_rows()
+    try:
+        main()
+    except subprocess.CalledProcessError as e:
+        sys.stderr.write(e.output.decode("utf-8", "ignore") if hasattr(e, "output") else str(e))
+        sys.exit(e.returncode)
+
