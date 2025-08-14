@@ -1,0 +1,52 @@
+name: Generate pages from keywords
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'content/keywords.csv'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: content-writes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.11' }
+
+      - name: Install deps
+        run: python - <<'PY'
+import sys, subprocess
+subprocess.check_call([sys.executable,'-m','pip','install','--upgrade','pip'])
+# внешние пакеты не обязательны, всё встроено
+PY
+
+      - name: Generate pages from CSV (LLM)
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          MODEL_ID: ${{ secrets.MODEL_ID }}
+        run: python tools/autogen_from_keywords.py
+
+      - name: Commit & push (with rebase)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin "${GITHUB_REF_NAME}"
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git add -A
+            git commit -m "content: autogen from keywords.csv"
+            git push origin HEAD:"${GITHUB_REF_NAME}"
+          else
+            echo "No changes"
+          fi
