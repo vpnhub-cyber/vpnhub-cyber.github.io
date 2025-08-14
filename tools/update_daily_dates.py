@@ -1,52 +1,85 @@
-from datetime import datetime
-from zoneinfo import ZoneInfo
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Обновляет в HTML-макетах маркеры дат:
+  <!--DAILY_DMY-->11.08.2025<!--/DAILY_DMY-->
+  <!--DAILY_ISO-->2025-08-11T13:00:00+03:00<!--/DAILY_ISO-->
+
+Правила:
+- Обрабатываются только файлы *.html, где реально встречаются маркеры.
+- Можно заморозить файл (пропустить), добавив в него <!--DAILY_FREEZE-->
+- Таймзона берётся из переменной окружения DAILY_TZ (по умолчанию Europe/Moscow)
+"""
+
+from __future__ import annotations
+import os
 import re
 from pathlib import Path
-import json
+from datetime import datetime
+try:
+    from zoneinfo import ZoneInfo  # Py3.9+
+except Exception:
+    ZoneInfo = None
 
-# --- настройки ---
-TZ = ZoneInfo("Europe/Moscow")
+RE_DMY = re.compile(r"<!--DAILY_DMY-->(.*?)<!--/DAILY_DMY-->", re.DOTALL | re.IGNORECASE)
+RE_ISO = re.compile(r"<!--DAILY_ISO-->(.*?)<!--/DAILY_ISO-->", re.DOTALL | re.IGNORECASE)
 
-# Можно ограничить обновление только списком файлов (опционально):
-MANIFEST = Path("tools/daily-pages.json")
-use_manifest = MANIFEST.exists()
+ROOT = Path(__file__).resolve().parents[1]  # repo root (.. от tools/)
+TZ_NAME = os.getenv("DAILY_TZ", "Europe/Moscow")
 
-if use_manifest:
-    pages = json.loads(MANIFEST.read_text(encoding="utf-8")).get("pages", [])
-    files = [Path(p) for p in pages if Path(p).suffix == ".html" and Path(p).exists()]
-else:
-    # По умолчанию обновляем ВСЕ .html, кроме архивов/вендор-папок
-    excludes = {"node_modules", ".git", "daily-archive", "tools", ".github"}
-    files = [p for p in Path(".").rglob("*.html") if all(x not in p.parts for x in excludes)]
+def now_dt():
+    if ZoneInfo:
+        return datetime.now(ZoneInfo(TZ_NAME))
+    # Фоллбек: без zoneinfo пишем ISO без смещения (не критично)
+    return datetime.now()
 
-now = datetime.now(TZ)
-today_dmy = now.strftime("%d.%m.%Y")
-today_iso = now.strftime("%Y-%m-%dT%H:%M:%S+03:00")
-today_long = now.strftime("%d %B %Y")  # “12 August 2025”; для рус. месяцев ниже маппинг
+def update_text(txt: str, dmy: str, iso: str) -> str | None:
+    if "<!--DAILY_FREEZE-->" in txt:
+        return None
+    changed = False
+    if "DAILY_DMY" in txt:
+        new = RE_DMY.sub(f"<!--DAILY_DMY-->{dmy}<!--/DAILY_DMY-->", txt)
+        changed |= (new != txt)
+        txt = new
+    if "DAILY_ISO" in txt:
+        new = RE_ISO.sub(f"<!--DAILY_ISO-->{iso}<!--/DAILY_ISO-->", txt)
+        changed |= (new != txt)
+        txt = new
+    return txt if changed else None
 
-# русские месяцы
-months_ru = {
-    "January":"января","February":"февраля","March":"марта","April":"апреля","May":"мая",
-    "June":"июня","July":"июля","August":"августа","September":"сентября",
-    "October":"октября","November":"ноября","December":"декабря"
-}
-for en, ru in months_ru.items():
-    today_long = today_long.replace(en, ru)
+def main():
+    dt = now_dt()
+    dmy = dt.strftime("%d.%m.%Y")
+    # ISO 8601 с часовым поясом (например 2025-08-11T06:10:00+03:00)
+    if dt.tzinfo:
+        iso = dt.isoformat(timespec="seconds")
+    else:
+        iso = dt.strftime("%Y-%m-%dT%H:%M:%S")
 
-def replace_between(mark, text, value):
-    # заменяет содержимое между <!--MARK-->...<!--/MARK--> на value
-    pattern = re.compile(rf"(<!--{mark}-->)(.*?)(<!--/{mark}-->)", re.DOTALL)
-    return pattern.sub(rf"\1{value}\3", text)
+    changed_files = []
 
-changed = 0
-for f in files:
-    s = f.read_text(encoding="utf-8")
-    orig = s
-    s = replace_between("DAILY_DMY", s, today_dmy)
-    s = replace_between("DAILY_ISO", s, today_iso)
-    s = replace_between("DAILY_LONG_RU", s, today_long)
-    if s != orig:
-        f.write_text(s, encoding="utf-8")
-        changed += 1
+    for path in ROOT.rglob("*.html"):
+        # Пропускаем системные/генерируемые файлы
+        if path.name in {"all-articles.html"}:
+            continue
+        if any(p in path.parts for p in [".git",]):
+            continue
 
-print(f"Updated {changed} file(s) to {today_dmy} / {today_iso}")
+        txt = path.read_text("utf-8", errors="ignore")
+        if ("DAILY_DMY" not in txt) and ("DAILY_ISO" not in txt):
+            continue  # нет маркеров — не трогаем
+
+        new_txt = update_text(txt, dmy, iso)
+        if new_txt is not None:
+            path.write_text(new_txt, encoding="utf-8")
+            changed_files.append(path.as_posix())
+
+    if changed_files:
+        print("Updated files:")
+        for f in changed_files:
+            print("  -", f)
+    else:
+        print("No files updated (no markers found or DAILY_FREEZE present).")
+
+if __name__ == "__main__":
+    main()
