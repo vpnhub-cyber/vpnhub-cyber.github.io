@@ -1,28 +1,53 @@
 name: Build sitemap & RSS & lists
+
 on:
-  workflow_dispatch:
   push:
+    branches: [ main ]
     paths:
-      - 'articles/*.html'
-      - 'index.html'
-      - 'tools/build_sitemap_and_rss.py'
+      - 'articles/**'
+      - 'tools/**'
+      # Автокоммиты, которые сам воркфлоу генерит, игнорируем как триггер,
+      # чтобы не было бесконечных циклов
+      - '!rss.xml'
+      - '!sitemap.xml'
+      - '!all-articles.html'
+  workflow_dispatch:
+
 permissions:
   contents: write
+
+concurrency:
+  group: content-writes-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: {fetch-depth: 0}
+        with:
+          fetch-depth: 0
+
       - uses: actions/setup-python@v5
-        with: {python-version: '3.x'}
-      - run: python tools/build_sitemap_and_rss.py
-      - name: Commit changes
+        with:
+          python-version: '3.11'
+
+      - name: Build feeds
         run: |
-          if [[ -n $(git status --porcelain) ]]; then
-            git config user.name "github-actions"
-            git config user.email "actions@users.noreply.github.com"
+          python tools/build_sitemap_and_rss.py
+
+      - name: Commit & push (with rebase)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git fetch origin "${GITHUB_REF_NAME}"
+          git pull --rebase origin "${GITHUB_REF_NAME}" || true
+
+          if [[ -n "$(git status --porcelain)" ]]; then
             git add -A
             git commit -m "chore: rebuild sitemap, rss and lists"
-            git push
+            git push origin HEAD:"${GITHUB_REF_NAME}"
+          else
+            echo "Nothing to update"
           fi
