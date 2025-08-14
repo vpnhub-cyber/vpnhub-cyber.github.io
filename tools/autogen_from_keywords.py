@@ -1,208 +1,220 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Генератор статей из /content/keywords.csv.
-Для каждого ключа создаёт /articles/<slug>.html по нашему шаблону
-с метрикой, OG, JSON-LD и маркерами дат <!--DAILY_*-->.
-Контент пишет LLM через OpenAI API.
-"""
 
-from __future__ import annotations
-import csv, html, os, re
+import os
+import re
+import csv
+import time
+import subprocess
+from datetime import datetime
 from pathlib import Path
-from datetime import datetime, timezone
-import base64
-import sys
 
-# --- Настройки
-REPO_ROOT = Path(__file__).resolve().parents[1]
-CONTENT_CSV = REPO_ROOT / "content" / "keywords.csv"
-ART_DIR     = REPO_ROOT / "articles"
+from unidecode import unidecode
+from slugify import slugify
+from openai import OpenAI
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-MODEL_ID = os.getenv("MODEL_ID", "gpt-4o-mini")  # поменяй при желании
+# ==== Настройки ====
+CSV_PATH = Path("content/keywords.csv")
+OUT_DIR = Path(".")              # корень сайта (страницы как earlier: slug.html)
+MARK_DIR = Path(".autogen")      # метки "сделано", чтобы безопасно перезапускать
+SITEMAP_PATH = Path("sitemap.xml")  # если у тебя своя сборка — можно отключить обновление
+PAUSE_SECONDS = 60               # пауза между публикациями
+MIN_WORDS = 900                  # целевой объём (примерно)
+# ====================
+
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "").strip()
+MODEL_ID = (os.environ.get("MODEL_ID") or os.environ.get("FALLBACK_MODEL_ID") or "gpt-4.1-mini").strip()
 
 if not OPENAI_API_KEY:
-    print("!! OPENAI_API_KEY не задан (Secrets → Actions).", file=sys.stderr)
-    sys.exit(1)
+    raise SystemExit("OPENAI_API_KEY is empty (add it in repo Settings → Secrets → Actions).")
 
-# --- Простой транслит для slug
-_sub = {
-    "а":"a","б":"b","в":"v","г":"g","д":"d","е":"e","ё":"e","ж":"zh","з":"z","и":"i","й":"y",
-    "к":"k","л":"l","м":"m","н":"n","о":"o","п":"p","р":"r","с":"s","т":"t","у":"u","ф":"f",
-    "х":"h","ц":"c","ч":"ch","ш":"sh","щ":"sch","ъ":"","ы":"y","ь":"","э":"e","ю":"yu","я":"ya",
-}
-def slugify(s: str) -> str:
-    s = s.strip().lower()
-    out = []
-    for ch in s:
-        if "a"<=ch<="z" or "0"<=ch<="9":
-            out.append(ch)
-        elif ch in " _-–—.":
-            out.append("-")
-        else:
-            out.append(_sub.get(ch, ""))
-    slug = re.sub("-{2,}","-", "".join(out)).strip("-")
-    return slug or "page"
+client = OpenAI(api_key=OPENAI_API_KEY)
 
-# --- LLM (через OpenAI API совместимый клиент)
-import json, urllib.request
+MARK_DIR.mkdir(exist_ok=True)
+OUT_DIR.mkdir(exist_ok=True, parents=True)
 
-def openai_chat(messages, model=MODEL_ID, max_tokens=2000):
-    url = "https://api.openai.com/v1/chat/completions"
-    req = urllib.request.Request(url,
-        headers={
-            "Authorization": f"Bearer {OPENAI_API_KEY}",
-            "Content-Type": "application/json",
-        },
-        data=json.dumps({
-            "model": model,
-            "messages": messages,
-            "temperature": 0.7,
-            "max_tokens": max_tokens,
-        }).encode("utf-8")
-    )
-    with urllib.request.urlopen(req, timeout=120) as r:
-        j = json.loads(r.read().decode("utf-8"))
-    return j["choices"][0]["message"]["content"]
+def norm(s: str) -> str:
+    return re.sub(r"\s+", " ", (s or "").strip().lower())
 
-STRUCTURE_PROMPT = """
-Ты пишешь продающую SEO-статью на русском для обычных людей. Строго придерживайся структуры и чек-листа:
+def make_slug(base: str) -> str:
+    base = base or ""
+    # сначала unidecode для корректного транслита, затем slugify
+    ascii_title = unidecode(base)
+    s = slugify(ascii_title, lowercase=True, max_length=120)
+    s = re.sub(r"-{2,}", "-", s).strip("-")
+    return s or datetime.utcnow().strftime("page-%Y%m%d-%H%M%S")
 
-1) Введение 120–150 слов: включи фразу «{primary_key}» в первом абзаце, добавь кратко: в России РКН ограничивает сервисы, VPN помогает.
-2) Рекламный блок (50–70 слов) с призывом и 2 кнопками: SAFENET и Норм VPN.
-3) «Почему это происходит» (150–180 слов): просто и без жаргона.
-4) Короткий план (4–5 пунктов).
-5) Подробно «Х способов…» (7–9 способов; каждый 120–180 слов, с плюсами/минусами и шагами).
-6) Предупреждения (100–150 слов) — бесплатные прокси/«ускорители» опасны.
-7) Итог с CTA (120–150 слов).
-8) FAQ: 6–8 вопросов, ответы по 50–80 слов. Обязательно упоминай проверку шифрования и ссылку на статью про утечки: /articles/how-to-check-vpn-leaks.html
-
-Запреты: не используй пафос, жаргон, «на стероидах», «как твой бывший», не больше 2 метафор и не более 2 «не X, а Y».
-Верни ТОЛЬКО внутренний HTML-контент для <main> (без <html>/<head>/<body>). Ссылки на кнопки:
-- https://t.me/SafeNetVpn_bot?start=afrrica
-- https://t.me/normwpn_bot?start=referral_228691787
-Тема: {keyword}
-H1: {h1}
-"""
-
-PAGE_TEMPLATE = """<!DOCTYPE html>
+def html_template(title: str, description: str, body_html: str) -> str:
+    now_iso = datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ")
+    return f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <title>{title}</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>{title} (<!--DAILY_DMY-->{dmy}<!--/DAILY_DMY-->)</title>
-  <meta name="description" content="{desc}">
-  <link rel="canonical" href="https://vpnhub-cyber.github.io/articles/{slug}.html">
-  <link rel="icon" href="/favicon.png" type="image/png">
-
+  <meta name="description" content="{description}">
+  <link rel="canonical" href="https://{os.environ.get('GITHUB_REPOSITORY', 'example.com').split('/')[-1]}.github.io/{''}">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="{title} (<!--DAILY_DMY-->{dmy}<!--/DAILY_DMY-->)">
-  <meta property="og:description" content="{desc}">
-  <meta property="og:url" content="https://vpnhub-cyber.github.io/articles/{slug}.html">
-  <meta property="og:image" content="https://vpnhub-cyber.github.io/og-image.png">
-  <meta property="article:modified_time" content="<!--DAILY_ISO-->{iso}<!--/DAILY_ISO-->">
-  <meta name="twitter:card" content="summary_large_image">
-
-  <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root{{--card:#121836;--b:#2f3f7a;--t:#e6edff}}
-    body{{margin:0;background:radial-gradient(ellipse at bottom,#1b2735 0%,#090a0f 100%);color:var(--t);font-family:'Montserrat',Arial,sans-serif}}
-    a{{color:#7fc8ff}} header,main,footer{{max-width:880px;margin:0 auto;padding:16px}}
-    h1{{font-family:'Russo One',Arial,sans-serif;color:#a0c7ff}}
-    .meta{{color:#9fb7ff}}
-    .card{{background:rgba(18,24,54,.92);border:1px solid var(--b);border-radius:16px;padding:14px;margin:14px 0}}
-  </style>
-
-  <!-- Yandex.Metrika -->
-  <script type="text/javascript">
-    (function(m,e,t,r,i,k,a){{m[i]=m[i]||function(){{(m[i].a=m[i].a||[]).push(arguments)}};m[i].l=1*new Date();
-      for (var j=0;j<document.scripts.length;j++){{if (document.scripts[j].src===r){{return;}}}}
-      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)}})
-      (window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=103602117', 'ym');
-    ym(103602117, 'init', {{ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", accurateTrackBounce:true, trackLinks:true}});
-  </script>
-  <noscript><div><img src="https://mc.yandex.ru/watch/103602117" style="position:absolute;left:-9999px;" alt=""></div></noscript>
+  <meta property="og:title" content="{title}">
+  <meta property="og:description" content="{description}">
+  <meta property="og:site_name" content="VPNHub">
+  <meta property="article:modified_time" content="{now_iso}">
 </head>
 <body>
-  <header>
-    <nav class="meta"><a href="/">🏠 На главную</a> · <a href="/all-articles.html">Все статьи</a></nav>
-    <h1>{h1} (<!--DAILY_DMY-->{dmy}<!--/DAILY_DMY-->)</h1>
-    <div class="meta">Обновлено: <!--DAILY_DMY-->{dmy}<!--/DAILY_DMY--></div>
-  </header>
-
-  <main>
-{body}
-    <section class="card">
-      <h2>Полезные материалы</h2>
-      <ul>
-        <li><a href="/articles/vpn-bypass-blocks-2025.html">Обход блокировок и DPI</a></li>
-        <li><a href="/articles/vpn-for-smartphone-2025.html">VPN для смартфона</a></li>
-        <li><a href="/articles/vpn-slow-speed-fix.html">Медленный интернет с VPN — как ускорить</a></li>
-        <li><a href="/articles/how-to-check-vpn-leaks.html">Проверка утечек IP/DNS/WebRTC</a></li>
-      </ul>
-    </section>
-    <div class="card">Теги: {tags} · сегодня <!--DAILY_DMY-->{dmy}<!--/DAILY_DMY--></div>
-  </main>
-
-  <footer>
-    <div class="meta">© 2025 VPNhub-Cyber · Связь: <a href="mailto:admin@vpnhub-cyber.ru">admin@vpnhub-cyber.ru</a></div>
-  </footer>
+<main class="container">
+  <h1>{title}</h1>
+  {body_html}
+</main>
 </body>
 </html>
 """
 
-def render_page(keyword: str, h1: str, primary_key: str, slug: str, tags: str) -> str:
-    dmy = datetime.now().strftime("%d.%m.%Y")
-    iso = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00","Z")
-    title = h1 or keyword
-    desc = f"{keyword}: простой план на сегодня — сеть, DNS, VPN (скрытый режим), кэш и быстрые настройки."
-    # запросим у LLM только тело <main>
-    prompt = STRUCTURE_PROMPT.format(keyword=keyword, h1=h1 or keyword, primary_key=primary_key or keyword)
-    body = openai_chat([
-        {"role":"system","content":"Ты практичный техредактор. Пишешь ясно и по делу."},
-        {"role":"user","content":prompt}
-    ], model=MODEL_ID, max_tokens=3000)
+def ask_llm(keyword: str, h1: str, primary_key: str) -> str:
+    """
+    Возвращает HTML фрагмент <p>...</p><h2>...</h2>... (без <html> оболочки).
+    """
+    pk = primary_key or ""
+    # не дублируем, если совпадает по смыслу
+    use_primary = pk and norm(pk) not in {norm(keyword), norm(h1)}
 
-    return PAGE_TEMPLATE.format(
-        title=html.escape(title),
-        desc=html.escape(desc),
-        h1=html.escape(h1 or title),
-        slug=slug,
-        dmy=dmy,
-        iso=iso,
-        body=body,
-        tags=html.escape(tags or keyword)
+    system_prompt = (
+        "Ты — технический редактор. Пиши подробные статьи на русском, структурируй подзаголовками, списками, "
+        "без воды, с практическими шагами. Не добавляй ничего об авторстве и отказах от ответственности."
     )
+    user_prompt = f"""
+Тема: «{h1 or keyword}».
 
-def main():
-    ART_DIR.mkdir(parents=True, exist_ok=True)
-    with open(CONTENT_CSV, "r", encoding="utf-8") as f:
-        rows = list(csv.DictReader(f))
-    changed = 0
-    for r in rows:
-        if not (r.get("publish","").lower().startswith("y")):
-            continue
-        kw  = (r.get("keyword") or "").strip()
-        if not kw: 
-            continue
-        h1  = (r.get("h1") or kw).strip()
-        pk  = (r.get("primary_key") or kw).strip()
-        slug = (r.get("slug") or slugify(kw)).strip()
-        force = r.get("force","").lower().startswith("y")
-        tags = (r.get("tags") or kw).strip()
+Задача:
+- Дай чёткое вступление (3–4 предложения). {(f'Во вступлении однажды употреби фразу: “{pk}”.' if use_primary else 'Не добавляй специальные ключевые фразы во вступление.')}
+- Дай план и раскрой блоками с подзаголовками h2/h3: как это работает, пошаговые инструкции, чек-листы, частые ошибки, FAQ.
+- Упоминай VPN-провайдеры без реф-ссылок и без явной рекламы.
+- Тон: нейтральный, полезный, без воды.
+- Объём не меньше {MIN_WORDS} слов.
+- Верни только HTML фрагмент для <body> (т.е. <p>, <h2>, <ul>, <code> и т.п.), без <html>/<head>.
+"""
+    resp = client.chat.completions.create(
+        model=MODEL_ID,
+        temperature=0.5,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ]
+    )
+    content = resp.choices[0].message.content.strip()
+    # На всякий — удалим случайные <html>, если модель вдруг добавит
+    content = re.sub(r"</?(html|head|body)[^>]*>", "", content, flags=re.I)
+    return content
 
-        out = ART_DIR / f"{slug}.html"
-        if out.exists() and not force:
-            print(f"skip exists: {out.name}")
-            continue
+def update_sitemap(slug: str):
+    """
+    Простейший апдейт: если есть sitemap.xml — дописываем URL, если его ещё нет в файле.
+    Если у тебя есть свой сборщик карты — можно отключить.
+    """
+    if not SITEMAP_PATH.exists():
+        return
+    url = f"https://{os.environ.get('GITHUB_REPOSITORY', '').split('/')[-1]}.github.io/{slug}.html"
+    txt = SITEMAP_PATH.read_text(encoding="utf-8", errors="ignore")
+    if url in txt:
+        return
+    # грубо: вставим перед </urlset>
+    lastmod = datetime.utcnow().strftime("%Y-%m-%d")
+    entry = f"\n  <url>\n    <loc>{url}</loc>\n    <lastmod>{lastmod}</lastmod>\n  </url>\n"
+    txt = re.sub(r"</urlset>\s*$", entry + "</urlset>", txt, flags=re.S)
+    SITEMAP_PATH.write_text(txt, encoding="utf-8")
 
-        html_page = render_page(kw, h1, pk, slug, tags)
-        out.write_text(html_page, encoding="utf-8")
-        print("written:", out.name)
-        changed += 1
+def git(*args):
+    subprocess.run(["git", *args], check=True)
 
-    print(f"Generated/updated: {changed} file(s).")
+def commit_and_push(message: str, paths=None):
+    if paths:
+        if isinstance(paths, (list, tuple, set)):
+            for p in paths:
+                git("add", str(p))
+        else:
+            git("add", str(paths))
+    else:
+        git("add", "-A")
+    # настроим кто коммитит
+    git("config", "user.name", "github-actions[bot]")
+    git("config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com")
+    # rebase pull (мягкая синхронизация)
+    try:
+        git("pull", "--rebase", "origin", os.environ.get("GITHUB_REF_NAME", "main"))
+    except subprocess.CalledProcessError:
+        # если кто-то только что пушнул – попробуем продолжить
+        pass
+    # коммитим, если есть изменения
+    res = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True)
+    if res.stdout.strip():
+        git("commit", "-m", message)
+        git("push", "origin", os.environ.get("GITHUB_REF_NAME", "main"))
+
+def process_row(row: dict) -> bool:
+    """
+    Обрабатывает одну строку CSV. Возвращает True, если страница была создана/обновлена.
+    """
+    publish = (row.get("publish") or "").strip().lower() in {"yes", "y", "1", "true"}
+    if not publish:
+        return False
+
+    keyword = (row.get("keyword") or "").strip()
+    h1 = (row.get("h1") or "").strip() or keyword
+    primary_key = (row.get("primary_key") or "").strip()
+    slug = (row.get("slug") or "").strip() or make_slug(keyword or h1)
+    force = (row.get("force") or "").strip().lower() in {"yes", "y", "1", "true"}
+
+    mark_file = MARK_DIR / f"{slug}.done"
+    html_path = OUT_DIR / f"{slug}.html"
+
+    # idempotency: если уже сделали и не force — пропускаем
+    if mark_file.exists() and not force and html_path.exists():
+        return False
+
+    # если файл существует и force==False — пропускаем, чтобы не перетирать вручную правленые страницы
+    if html_path.exists() and not force and not mark_file.exists():
+        return False
+
+    # генерим контент
+    body_html = ask_llm(keyword, h1, primary_key)
+
+    # description: первая строка без HTML
+    plain_intro = re.sub(r"<[^>]+>", " ", body_html)
+    plain_intro = re.sub(r"\s+", " ", plain_intro).strip()
+    description = plain_intro[:160]
+
+    full_html = html_template(h1, description, body_html)
+    html_path.write_text(full_html, encoding="utf-8")
+
+    # простое обновление карты сайта (если есть)
+    update_sitemap(slug)
+
+    # ставим метку «сделано» (для безопасных перезапусков)
+    mark_file.write_text(datetime.utcnow().isoformat(), encoding="utf-8")
+
+    # коммитим только изменённое
+    commit_and_push(f"autogen: {slug}", paths=[html_path, mark_file, SITEMAP_PATH if SITEMAP_PATH.exists() else None])
+
+    return True
+
+def iterate_csv_rows():
+    with CSV_PATH.open(newline="", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        rows = list(reader)
+
+    # идём по порядку, но публикуем по одной за запуск скрипта
+    published = 0
+    for i, row in enumerate(rows, 1):
+        did = process_row(row)
+        if did:
+            published += 1
+            print(f"[{i}/{len(rows)}] ✓ опубликовано: {row.get('keyword') or row.get('h1')}")
+            # пауза перед следующей публикацией
+            time.sleep(PAUSE_SECONDS)
+        else:
+            print(f"[{i}/{len(rows)}] – пропуск")
+
+    if published == 0:
+        print("Новых страниц нет (всё уже сделано или publish != yes).")
 
 if __name__ == "__main__":
-    main()
+    iterate_csv_rows()
