@@ -6,8 +6,8 @@
     <link>https://vpnhub-cyber.github.io/</link>
     <atom:link href="https://vpnhub-cyber.github.io/rss.xml" rel="self" type="application/rss+xml"/>
     <language>ru-RU</language>
-    <lastBuildDate>Thu, 15 Aug 2025 19:04:00 +0000</lastBuildDate>
-    <pubDate>Thu, 15 Aug 2025 19:04:00 +0000</pubDate>
+    <lastBuildDate>Thu, 15 Aug 2025 19:20:00 +0000</lastBuildDate>
+    <pubDate>Thu, 15 Aug 2025 19:20:00 +0000</pubDate>
     <ttl>1440</ttl>
     <generator>SAFENET-VPN Content Team</generator>
     <managingEditor>support@safenet-vpn.com (SAFENET-VPN Support)</managingEditor>
@@ -21,7 +21,53 @@
       <height>630</height>
     </image>
 
-    <!-- Последние статьи в хронологическом порядке создания -->
+    <!-- НОВЫЕ СТАТЬИ (добавлены 15 августа 2025) -->
+    <item>
+      <title>VPN для игр и консолей — PlayStation, Xbox, Nintendo Switch</title>
+      <description>VPN для игр: PlayStation 4/5, Xbox One/Series, Nintendo Switch, Steam Deck. Снижение пинга, доступ к региональным играм, защита от DDoS. Настройка через роутер, обход геоблокировок игровых сервисов.</description>
+      <link>https://vpnhub-cyber.github.io/devices/gaming/</link>
+      <guid>https://vpnhub-cyber.github.io/devices/gaming/</guid>
+      <pubDate>Thu, 15 Aug 2025 19:20:00 +0000</pubDate>
+      <category>Устройства</category>
+    </item>
+
+    <item>
+      <title>VPN на роутере — настройка Asus, Keenetic, OpenWrt, MikroTik</title>
+      <description>Как настроить VPN на роутере: Asus (AsusWRT/Merlin), Keenetic, OpenWrt, MikroTik, TP-Link. Импорт OpenVPN/WireGuard профилей, защита всей домашней сети, настройка для Smart TV и игровых консолей.</description>
+      <link>https://vpnhub-cyber.github.io/devices/routers/</link>
+      <guid>https://vpnhub-cyber.github.io/devices/routers/</guid>
+      <pubDate>Thu, 15 Aug 2025 19:15:00 +0000</pubDate>
+      <category>Устройства</category>
+    </item>
+
+    <item>
+      <title>VPN для планшетов — Android и iPad: настройка и приложения</title>
+      <description>Как настроить VPN на планшете: Android планшеты (WireGuard, OpenVPN), iPad (iOS приложения, профили). Автоподключение, экономия батареи, решение проблем с планшетными приложениями.</description>
+      <link>https://vpnhub-cyber.github.io/devices/tablets/</link>
+      <guid>https://vpnhub-cyber.github.io/devices/tablets/</guid>
+      <pubDate>Thu, 15 Aug 2025 19:10:00 +0000</pubDate>
+      <category>Устройства</category>
+    </item>
+
+    <item>
+      <title>Сравнение VPN сервисов — методология и критерии оценки</title>
+      <description>Как правильно сравнивать VPN провайдеров: критерии безопасности, скорости, приватности, цены. Методология объективной оценки VPN сервисов, на что обращать внимание при выборе.</description>
+      <link>https://vpnhub-cyber.github.io/comparisons/</link>
+      <guid>https://vpnhub-cyber.github.io/comparisons/</guid>
+      <pubDate>Thu, 15 Aug 2025 19:09:00 +0000</pubDate>
+      <category>Сравнения</category>
+    </item>
+
+    <item>
+      <title>Протоколы VPN — WireGuard, OpenVPN, IKEv2: сравнение и выбор</title>
+      <description>Подробное сравнение VPN протоколов: WireGuard, OpenVPN, IKEv2, L2TP/IPsec. Скорость, безопасность, совместимость с устройствами. Какой протокол выбрать для Windows, Android, iOS.</description>
+      <link>https://vpnhub-cyber.github.io/guide/protocols/</link>
+      <guid>https://vpnhub-cyber.github.io/guide/protocols/</guid>
+      <pubDate>Thu, 15 Aug 2025 19:05:00 +0000</pubDate>
+      <category>Руководства</category>
+    </item>
+
+    <!-- ПРЕДЫДУЩИЕ СТАТЬИ (созданы ранее) -->
     <item>
       <title>Диагностика VPN — проверка IP, DNS, скорости, безопасности</title>
       <description>Центр диагностики VPN: онлайн инструменты для проверки IP адреса, DNS утечек, WebRTC, тест скорости. Убедитесь, что ваш VPN работает правильно и защищает конфиденциальность.</description>
