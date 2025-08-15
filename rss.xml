@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>SAFENET-VPN — Руководства и инструкции по VPN</title>
+    <description>Полные руководства по настройке VPN на всех устройствах, стримингу через VPN, решению проблем и диагностике. Практические советы от экспертов SAFENET-VPN.</description>
+    <link>https://vpnhub-cyber.github.io/</link>
+    <atom:link href="https://vpnhub-cyber.github.io/rss.xml" rel="self" type="application/rss+xml"/>
+    <language>ru-RU</language>
+    <lastBuildDate>Thu, 15 Aug 2025 19:04:00 +0000</lastBuildDate>
+    <pubDate>Thu, 15 Aug 2025 19:04:00 +0000</pubDate>
+    <ttl>1440</ttl>
+    <generator>SAFENET-VPN Content Team</generator>
+    <managingEditor>support@safenet-vpn.com (SAFENET-VPN Support)</managingEditor>
+    <webMaster>support@safenet-vpn.com (SAFENET-VPN Support)</webMaster>
+    <copyright>© 2025 SAFENET-VPN. Все права защищены.</copyright>
+    <image>
+      <url>https://vpnhub-cyber.github.io/images/og-safenet.jpg</url>
+      <title>SAFENET-VPN</title>
+      <link>https://vpnhub-cyber.github.io/</link>
+      <width>1200</width>
+      <height>630</height>
+    </image>
+
+    <!-- Последние статьи в хронологическом порядке создания -->
+    <item>
+      <title>Диагностика VPN — проверка IP, DNS, скорости, безопасности</title>
+      <description>Центр диагностики VPN: онлайн инструменты для проверки IP адреса, DNS утечек, WebRTC, тест скорости. Убедитесь, что ваш VPN работает правильно и защищает конфиденциальность.</description>
+      <link>https://vpnhub-cyber.github.io/diagnostics/</link>
+      <guid>https://vpnhub-cyber.github.io/diagnostics/</guid>
+      <pubDate>Thu, 15 Aug 2025 19:04:00 +0000</pubDate>
+      <category>Диагностика</category>
+    </item>
+
+    <item>
+      <title>Проверка IP адреса и DNS утечек — тест VPN на безопасность</title>
+      <description>Онлайн проверка IP адреса, DNS и WebRTC утечек. Убедитесь, что ваш VPN работает правильно и защищает конфиденциальность. Пошаговые инструкции по устранению утечек.</description>
+      <link>https://vpnhub-cyber.github.io/diagnostics/ip-check/</link>
+      <guid>https://vpnhub-cyber.github.io/diagnostics/ip-check/</guid>
+      <pubDate>Thu, 15 Aug 2025 18:49:00 +0000</pubDate>
+      <category>Диагностика</category>
+    </item>
+
+    <item>
+      <title>Решение проблем с VPN — диагностика, исправление, поддержка 24/7</title>
+      <description>Центр устранения неполадок VPN: не подключается, медленная скорость, обрывы, ошибки приложений, DNS утечки. Быстрая диагностика, пошаговые решения, техподдержка 24/7.</description>
+      <link>https://vpnhub-cyber.github.io/troubleshooting/</link>
+      <guid>https://vpnhub-cyber.github.io/troubleshooting/</guid>
+      <pubDate>Thu, 15 Aug 2025 18:34:00 +0000</pubDate>
+      <category>Решение проблем</category>
+    </item>
+
+    <item>
+      <title>VPN для Smart TV — Samsung, LG, Android TV, Apple TV</title>
+      <description>Как подключить VPN на Smart TV: через роутер (универсально), Android TV (приложение), раздачу с ПК/Mac. Samsung Tizen, LG webOS, Sony — пошаговые инструкции, скорость для 4K.</description>
+      <link>https://vpnhub-cyber.github.io/devices/smart-tv/</link>
+      <guid>https://vpnhub-cyber.github.io/devices/smart-tv/</guid>
+      <pubDate>Thu, 15 Aug 2025 18:19:00 +0000</pubDate>
+      <category>Устройства</category>
+    </item>
+
+    <item>
+      <title>VPN для Netflix — как смотреть и какую страну выбрать</title>
+      <description>Полное руководство по Netflix через VPN: выбор локации (US/UK/Canada/Japan), устранение ошибки прокси M7111‑1331‑5059, скорость для HD/4K, советы по устройствам.</description>
+      <link>https://vpnhub-cyber.github.io/streaming/netflix/</link>
+      <guid>https://vpnhub-cyber.github.io/streaming/netflix/</guid>
+      <pubDate>Thu, 15 Aug 2025 18:04:00 +0000</pubDate>
+      <category>Стриминг</category>
+    </item>
+
+    <item>
+      <title>VPN для Windows 10/11 — установка и настройка</title>
+      <description>Пошаговая инструкция для Windows 10 и Windows 11: встроенный клиент (IKEv2/L2TP), WireGuard и OpenVPN. Разбираем быстрый старт, безопасность, автозапуск и устранение проблем.</description>
+      <link>https://vpnhub-cyber.github.io/devices/windows/</link>
+      <guid>https://vpnhub-cyber.github.io/devices/windows/</guid>
+      <pubDate>Thu, 15 Aug 2025 17:49:00 +0000</pubDate>
+      <category>Устройства</category>
+    </item>
+
+    <item>
+      <title>Полное руководство по VPN — от основ до экспертного уровня</title>
+      <description>Изучите VPN с нуля: что такое VPN, как работает, какой выбрать, протоколы безопасности, юрисдикции. Персонализированные пути обучения для новичков и экспертов с практическими примерами.</description>
+      <link>https://vpnhub-cyber.github.io/guide/</link>
+      <guid>https://vpnhub-cyber.github.io/guide/</guid>
+      <pubDate>Thu, 15 Aug 2025 17:34:00 +0000</pubDate>
+      <category>Руководства</category>
+    </item>
+
+    <item>
+      <title>VPN для стриминга — Netflix, YouTube, Disney+ без ограничений</title>
+      <description>Смотрите Netflix, YouTube, Disney+, Hulu через VPN без блокировок. Выбор локации, обход гео-ограничений, оптимизация для 4K/HD. Пошаговые инструкции для всех стриминговых сервисов.</description>
+      <link>https://vpnhub-cyber.github.io/streaming/</link>
+      <guid>https://vpnhub-cyber.github.io/streaming/</guid>
+      <pubDate>Thu, 15 Aug 2025 17:19:00 +0000</pubDate>
+      <category>Стриминг</category>
+    </item>
+
+    <item>
+      <title>VPN для всех устройств — настройка на Windows, Android, iPhone, Smart TV</title>
+      <description>Пошаговые инструкции по настройке VPN на любых устройствах: Windows 10/11, Android, iPhone/iPad, Smart TV, роутер. WireGuard и OpenVPN конфигурации, решение проблем подключения.</description>
+      <link>https://vpnhub-cyber.github.io/devices/</link>
+      <guid>https://vpnhub-cyber.github.io/devices/</guid>
+      <pubDate>Thu, 15 Aug 2025 17:04:00 +0000</pubDate>
+      <category>Устройства</category>
+    </item>
+
+    <item>
+      <title>VPN не работает — что делать: диагностика и решение проблем</title>
+      <description>Пошаговая диагностика и устранение проблем с VPN: не подключается, медленно работает, ошибки авторизации. Быстрые решения для Windows, Android, iOS, роутеров. Когда обращаться в поддержку.</description>
+      <link>https://vpnhub-cyber.github.io/troubleshooting/not-working/</link>
+      <guid>https://vpnhub-cyber.github.io/troubleshooting/not-working/</guid>
+      <pubDate>Thu, 15 Aug 2025 16:49:00 +0000</pubDate>
+      <category>Решение проблем</category>
+    </item>
+
+    <item>
+      <title>VPN для YouTube — как смотреть без замедлений и блокировок</title>
+      <description>Обход замедлений YouTube в России, выбор оптимальных серверов, настройка для максимальной скорости. Решение проблем с буферизацией, выбор качества, VPN для YouTube Premium.</description>
+      <link>https://vpnhub-cyber.github.io/streaming/youtube/</link>
+      <guid>https://vpnhub-cyber.github.io/streaming/youtube/</guid>
+      <pubDate>Thu, 15 Aug 2025 16:34:00 +0000</pubDate>
+      <category>Стриминг</category>
+    </item>
+
+    <item>
+      <title>VPN для iPhone и iPad — настройка iOS, приложения, On Demand</title>
+      <description>Полная инструкция по VPN для iOS: App Store приложения, импорт конфигураций, On Demand подключение, Siri Shortcuts, Personal VPN, решение проблем с iPhone и iPad.</description>
+      <link>https://vpnhub-cyber.github.io/devices/ios/</link>
+      <guid>https://vpnhub-cyber.github.io/devices/ios/</guid>
+      <pubDate>Thu, 15 Aug 2025 16:19:00 +0000</pubDate>
+      <category>Устройства</category>
+    </item>
+
+    <item>
+      <title>VPN для Android — настройка, приложения, автоподключение</title>
+      <description>Подробная инструкция по настройке VPN на Android: лучшие приложения из Google Play, импорт конфигураций WireGuard и OpenVPN, автоподключение по Wi-Fi, Always-on VPN, решение проблем.</description>
+      <link>https://vpnhub-cyber.github.io/devices/android/</link>
+      <guid>https://vpnhub-cyber.github.io/devices/android/</guid>
+      <pubDate>Thu, 15 Aug 2025 16:04:00 +0000</pubDate>
+      <category>Устройства</category>
+    </item>
+
+    <item>
+      <title>Как выбрать надежный VPN — критерии безопасности и чек-лист</title>
+      <description>Полное руководство по выбору VPN провайдера: критерии безопасности, юрисдикции, протоколы, логирование, скорость. Чек-лист для оценки любого VPN сервиса, на что обращать внимание.</description>
+      <link>https://vpnhub-cyber.github.io/guide/selection-criteria/</link>
+      <guid>https://vpnhub-cyber.github.io/guide/selection-criteria/</guid>
+      <pubDate>Thu, 15 Aug 2025 15:49:00 +0000</pubDate>
+      <category>Руководства</category>
+    </item>
+
+    <item>
+      <title>Что такое VPN простыми словами — принципы работы и применение</title>
+      <description>VPN для начинающих: что это такое, как работает туннелирование и шифрование, зачем нужен VPN, основные применения, плюсы и минусы, законность использования. Простым языком без технических терминов.</description>
+      <link>https://vpnhub-cyber.github.io/guide/vpn-fundamentals/</link>
+      <guid>https://vpnhub-cyber.github.io/guide/vpn-fundamentals/</guid>
+      <pubDate>Thu, 15 Aug 2025 15:34:00 +0000</pubDate>
+      <category>Руководства</category>
+    </item>
+
+  </channel>
+</rss>
