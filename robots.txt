@@ -1,19 +1,8 @@
 User-agent: *
 Allow: /
 
-# Разрешить индексацию основных разделов
-Allow: /guide/
-Allow: /devices/
-Allow: /diagnostics/
-Allow: /comparisons/
-
-# Запретить служебные файлы
-Disallow: *.json
-Disallow: /admin/
-Disallow: /temp/
-
-# Sitemap для поисковиков
+Host: https://vpnhub-cyber.github.io
 Sitemap: https://vpnhub-cyber.github.io/sitemap.xml
 
-# Специально для Яндекса
-Host: vpnhub-cyber.github.io
+# RSS Feed доступен по адресу:
+# https://vpnhub-cyber.github.io/rss.xml
