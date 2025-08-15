@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://vpnhub-cyber.github.io/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/guide/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/guide/vpn-fundamentals/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/guide/selection-criteria/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/guide/privacy-security/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/guide/protocols/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/devices/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/devices/android/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/devices/windows/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/devices/smart-tv/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/devices/tablets/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/devices/routers/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/devices/gaming/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/diagnostics/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/comparisons/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/faq/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/legal/privacy/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/legal/terms/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  
+  <url>
+    <loc>https://vpnhub-cyber.github.io/legal/disclaimer/</loc>
+    <lastmod>2024-08-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>
