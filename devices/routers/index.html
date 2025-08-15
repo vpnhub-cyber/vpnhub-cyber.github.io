@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <title>VPN на роутере — настройка Asus, Keenetic, OpenWrt, MikroTik | SAFENET‑VPN</title>
+  <meta name="description" content="Как настроить VPN на роутере: Asus (AsusWRT/Merlin), Keenetic, OpenWrt, MikroTik, TP-Link. Импорт OpenVPN/WireGuard профилей, защита всей домашней сети, настройка для Smart TV и игровых консолей.">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="canonical" href="https://vpnhub-cyber.github.io/devices/routers/">
+  <meta name="robots" content="index,follow">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:title" content="VPN на роутере — настройка Asus, Keenetic, OpenWrt, MikroTik">
+  <meta property="og:description" content="Пошаговая настройка VPN клиента на популярных роутерах. Защита всей домашней сети одним подключением.">
+  <meta property="og:url" content="https://vpnhub-cyber.github.io/devices/routers/">
+  <meta property="og:image" content="https://vpnhub-cyber.github.io/images/og-safenet.jpg">
+  <meta property="og:site_name" content="SAFENET-VPN">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="VPN на роутере — настройка Asus, Keenetic, OpenWrt, MikroTik">
+  <meta name="twitter:description" content="Настройка VPN клиента на роутерах: защита всех устройств сети автоматически.">
+  <meta name="twitter:image" content="https://vpnhub-cyber.github.io/images/og-safenet.jpg">
+
+  <link rel="icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="alternate" type="application/rss+xml" title="SAFENET-VPN — Руководства по VPN" href="/rss.xml">
+
+  <style>
+    :root{
+      --bg:#0b1020; --card:#11183a; --text:#e9eefc; --muted:#aab3d9; --accent:#4da3ff; --accent-2:#7de2d1; --ok:#29c773; --warn:#ffb020; --err:#ff5c5c;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,'Helvetica Neue',Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+    a{color:var(--accent);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:1050px;margin:0 auto;padding:20px}
+    .breadcrumbs{font-size:.9rem;color:var(--muted);margin:12px 0}
+    .breadcrumbs a{color:var(--muted)}
+    .hero{background:linear-gradient(135deg,rgba(77,163,255,.15),rgba(125,226,209,.12));border:1px solid rgba(125,226,209,.25);border-radius:16px;padding:28px;margin:16px 0}
+    .hero h1{margin:0 0 10px 0;font-size:2rem}
+    .hero p{margin:0 0 16px 0;color:var(--muted)}
+    .cta-row{display:flex;flex-wrap:wrap;gap:10px}
+    .btn{display:inline-block;background:var(--accent);color:#061229;padding:12px 16px;border-radius:10px;font-weight:700}
+    .btn.secondary{background:transparent;border:1px solid var(--accent);color:var(--text)}
+    .grid{display:grid;grid-template-columns:1fr 320px;gap:24px}
+    @media(max-width:980px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:18px}
+    h2{margin-top:28px}
+    h3{margin-top:20px}
+    .badge{display:inline-block;background:rgba(77,163,255,.15);border:1px solid rgba(77,163,255,.4);color:#cfe5ff;padding:2px 8px;border-radius:999px;font-size:.8rem}
+    .note{border-left:3px solid var(--accent-2);padding-left:12px;color:#cfe5ff}
+    .warn{border-left:3px solid var(--warn);padding-left:12px}
+    .ok{color:var(--ok);font-weight:600}
+    ul.check>li::marker{content:"✔ ";color:var(--ok)}
+    .also ul{columns:2;gap:24px}
+    @media(max-width:680px){.also ul{columns:1}}
+    .muted{color:var(--muted)}
+    .footer-cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .small{font-size:.9rem}
+    code.inline{background:#0d1330;border:1px solid rgba(255,255,255,.06);padding:2px 6px;border-radius:6px}
+    .router-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:20px 0}
+    .router-card{border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:16px;background:rgba(17,24,58,.3)}
+    .router-card h3{margin:0 0 8px 0;color:var(--accent)}
+    .steps{margin:12px 0 0 0;padding-left:20px}
+  </style>
+
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+    (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],
+      k.async=1;k.src=r;a.parentNode.insertBefore(k,a)
+    })(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+    ym(103602117, "init", {clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true});
+  </script>
+  <noscript><div><img src="https://mc.yandex.ru/watch/103602117" style="position:absolute; left:-9999px;" alt=""></div></noscript>
+  <!-- /Yandex.Metrika -->
+</head>
+<body>
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Хлебные крошки">
+      <a href="/">Главная</a> › <a href="/devices/">Устройства</a> › <span>Роутеры</span>
+    </nav>
+
+    <section class="hero">
+      <span class="badge">Сетевое оборудование</span>
+      <h1>VPN на роутере — настройка для всей домашней сети</h1>
+      <p>Настройте VPN на роутере и защитите все устройства автоматически: Smart TV, игровые консоли, IoT устройства. Пошаговые инструкции для Asus, Keenetic, OpenWrt, MikroTik и других популярных роутеров.</p>
+      <div class="cta-row">
+        <a class="btn" href="https://t.me/SafeNetVpn_bot?start=afrrica" onclick="ym(103602117,'reachGoal','routers_main_cta')" rel="noopener nofollow">Получить конфиг для роутера</a>
+        <a class="btn secondary" href="#routers-list" onclick="ym(103602117,'reachGoal','routers_list_start')">Выбрать роутер</a>
+      </div>
+      <p class="muted small">SAFENET‑VPN: OpenVPN и WireGuard профили • От 126₽/мес (первый месяц 107₽)</p>
+    </section>
+
+    <div class="grid">
+      <main>
+        <section class="card">
+          <h2>Преимущества VPN на роутере</h2>
+          <ul class="check">
+            <li><strong>Защита всех устройств:</strong> ПК, смартфоны, Smart TV, консоли — все автоматически через VPN</li>
+            <li><strong>Нет лимита устройств:</strong> подключайте сколько угодно гаджетов</li>
+            <li><strong>Простота управления:</strong> одна точка настройки для всей сети</li>
+            <li><strong>Защита IoT устройств:</strong> умные камеры, колонки, телевизоры без VPN-клиентов</li>
+            <li><strong>Стабильность:</strong> роутер работает 24/7, не нужно помнить о включении VPN</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Общий алгоритм настройки</h2>
+          <ol>
+            <li><strong>Получите конфигурацию</strong> в <a href="https://t.me/SafeNetVpn_bot?start=afrrica" onclick="ym(103602117,'reachGoal','routers_config_step')">Telegram-боте SAFENET-VPN</a></li>
+            <li><strong>Войдите в веб-интерфейс роутера</strong> (обычно <code class="inline">192.168.1.1</code> или <code class="inline">192.168.0.1</code>)</li>
+            <li><strong>Найдите раздел VPN-клиента</strong> (OpenVPN Client, WireGuard, VPN)</li>
+            <li><strong>Импортируйте профиль</strong> (.ovpn или .conf файл)</li>
+            <li><strong>Включите подключение</strong> и дождитесь статуса "Connected"</li>
+            <li><strong>Проверьте IP</strong> на любом устройстве — должен показать VPN сервер</li>
+          </ol>
+        </section>
+
+        <section id="routers-list" class="card">
+          <h2>Настройка по производителям</h2>
+          <div class="router-cards">
+            <div class="router-card">
+              <h3>🔧 Asus (AsusWRT/Merlin)</h3>
+              <p><strong>Модели:</strong> RT-AX86U, RT-AX88U, RT-AC86U, RT-AX58U</p>
+              <p><strong>Поддержка:</strong> OpenVPN встроен, WireGuard в прошивке Merlin</p>
+              <ol class="steps">
+                <li>Дополнительные настройки → VPN → VPN Client</li>
+                <li>Add profile → Import .ovpn file</li>
+                <li>Activate → дождитесь Connected</li>
+                <li>Redirect Internet traffic: Yes</li>
+              </ol>
+              <p class="small muted">Для WireGuard нужна прошивка Asuswrt-Merlin</p>
+            </div>
+
+            <div class="router-card">
+              <h3>🌐 Keenetic</h3>
+              <p><strong>Модели:</strong> Giga, Ultra, Speedster, Viva, City</p>
+              <p><strong>Поддержка:</strong> OpenVPN и WireGuard через компоненты</p>
+              <ol class="steps">
+                <li>Общие настройки → Обновление → Компоненты</li>
+                <li>Установите "Клиент VPN"</li>
+                <li>Интернет → Подключения → Добавить → VPN</li>
+                <li>Импортируйте .ovpn профиль</li>
+              </ol>
+              <p class="small muted">Простой и понятный интерфейс</p>
+            </div>
+
+            <div class="router-card">
+              <h3>🐧 OpenWrt</h3>
+              <p><strong>Модели:</strong> Xiaomi, TP-Link, Netgear с кастомной прошивкой</p>
+              <p><strong>Поддержка:</strong> OpenVPN и WireGuard через пакеты</p>
+              <ol class="steps">
+                <li>System → Software → Update lists</li>
+                <li>Install: openvpn-openssl, luci-app-openvpn</li>
+                <li>VPN → OpenVPN → Upload configuration</li>
+                <li>Enable instance</li>
+              </ol>
+              <p class="small muted">Максимальная гибкость настроек</p>
+            </div>
+
+            <div class="router-card">
+              <h3>⚡ MikroTik</h3>
+              <p><strong>Модели:</strong> hAP серия, RB серия</p>
+              <p><strong>Поддержка:</strong> OpenVPN, L2TP, IKEv2</p>
+              <ol class="steps">
+                <li>Winbox → PPP → Interface → Add → OVPN Client</li>
+                <li>Загрузите сертификаты в Files</li>
+                <li>Настройте маршрутизацию</li>
+                <li>Enable interface</li>
+              </ol>
+              <p class="small muted">Требует знания RouterOS</p>
+            </div>
+
+            <div class="router-card">
+              <h3>🔷 TP-Link</h3>
+              <p><strong>Модели:</strong> Archer AX73, AX50, C80</p>
+              <p><strong>Поддержка:</strong> OpenVPN Client (в новых моделях)</p>
+              <ol class="steps">
+                <li>Advanced → VPN Client → OpenVPN</li>
+                <li>Browse → загрузите .ovpn файл</li>
+                <li>Connect</li>
+              </ol>
+              <p class="small muted">Не все модели поддерживают VPN клиент</p>
+            </div>
+
+            <div class="router-card">
+              <h3>🔶 Netgear</h3>
+              <p><strong>Модели:</strong> Nighthawk серия (R7000, R8000)</p>
+              <p><strong>Поддержка:</strong> OpenVPN Client</p>
+              <ol class="steps">
+                <li>Dynamic DNS → VPN Service</li>
+                <li>Enable VPN Client</li>
+                <li>Upload .ovpn configuration</li>
+              </ol>
+              <p class="small muted">Встроенная поддержка в топовых моделях</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Требования к железу роутера</h2>
+          <ul>
+            <li><strong>Для OpenVPN:</strong> минимум 800 МГц CPU, 128 МБ RAM</li>
+            <li><strong>Для WireGuard:</strong> менее требователен, работает на слабом железе</li>
+            <li><strong>Для 4K стриминга:</strong> двухъядерный процессор, аппаратное ускорение AES</li>
+            <li><strong>Рекомендуемые чипсеты:</strong> Broadcom, Qualcomm, MediaTek (новые)</li>
+          </ul>
+          
+          <div class="note">
+            <strong>Совет:</strong> Роутеры AX-класса (Wi-Fi 6) обычно имеют достаточную производительность для VPN без потери скорости.
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Оптимизация производительности</h2>
+          <ul class="check">
+            <li><strong>Выберите WireGuard:</strong> в 2-3 раза быстрее OpenVPN</li>
+            <li><strong>Используйте аппаратное ускорение:</strong> включите AES-NI если поддерживается</li>
+            <li><strong>Оптимизируйте MTU:</strong> попробуйте значения 1200-1400</li>
+            <li><strong>Выберите ближний сервер:</strong> минимизируйте задержки</li>
+            <li><strong>Настройте QoS:</strong> приоритет VPN трафику</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <h2>Решение проблем</h2>
+          
+          <h3>VPN подключается, но нет интернета</h3>
+          <ul>
+            <li>Проверьте настройки DNS в конфигурации VPN</li>
+            <li>Убедитесь, что включено перенаправление трафика</li>
+            <li>Проверьте правила firewall</li>
+          </ul>
+          
+          <h3>Очень низкая скорость через VPN</h3>
+          <ul>
+            <li>Переключитесь с OpenVPN на WireGuard</li>
+            <li>Смените VPN сервер на менее загруженный</li>
+            <li>Проверьте загрузку CPU роутера</li>
+            <li>Рассмотрите обновление роутера</li>
+          </ul>
+          
+          <h3>Некоторые устройства не работают с VPN</h3>
+          <ul>
+            <li>Настройте policy routing для исключений</li>
+            <li>Создайте отдельную Wi-Fi сеть без VPN</li>
+            <li>Используйте VPN только для определенных устройств</li>
+          </ul>
+        </section>
+
+        <section class="card also">
+          <h2>Читайте также</h2>
+          <ul>
+            <li><a href="/devices/smart-tv/">VPN для Smart TV — через роутер</a></li>
+            <li><a href="/devices/gaming/">VPN для игровых консолей</a></li>
+            <li><a href="/guide/protocols/">Протоколы VPN — OpenVPN vs WireGuard</a></li>
+            <li><a href="/streaming/netflix/">VPN для Netflix на всех устройствах</a></li>
+            <li><a href="/diagnostics/ip-check/">Проверка IP адреса и утечек</a></li>
+            <li><a href="/troubleshooting/not-working/">VPN не работает — диагностика</a></li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <div class="footer-cta">
+            <div>
+              <h3>Защитите всю домашнюю сеть: SAFENET‑VPN</h3>
+              <p class="muted">Конфигурации для всех популярных роутеров, техподдержка по настройке. От 126₽/мес (первый месяц 107₽).</p>
+            </div>
+            <a class="btn" href="https://t.me/SafeNetVpn_bot?start=afrrica" onclick="ym(103602117,'reachGoal','routers_footer_cta')" rel="noopener nofollow">Начать в Telegram</a>
+          </div>
+        </section>
+      </main>
+
+      <aside>
+        <div class="card">
+          <h3>🔧 Популярные роутеры</h3>
+          <ul class="small">
+            <li><strong>Asus:</strong> AsusWRT/Merlin</li>
+            <li><strong>Keenetic:</strong> встроенный VPN клиент</li>
+            <li><strong>OpenWrt:</strong> максимум возможностей</li>
+            <li><strong>MikroTik:</strong> для продвинутых</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Помощь с настройкой роутера</h3>
+          <p class="small muted">Поможем настроить VPN на вашей модели роутера. Техподдержка и консультации.</p>
+          <a class="btn" href="https://t.me/SafeNetVpn_bot?start=afrrica" onclick="ym(103602117,'reachGoal','routers_sidebar_cta')" rel="noopener nofollow">Получить помощь</a>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="muted small" style="margin:24px 0;">
+      © SAFENET‑VPN. VPN для роутеров любых производителей и прошивок.
+    </footer>
+  </div>
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "VPN на роутере — настройка для всей домашней сети",
+    "description": "Пошаговая настройка VPN клиента на роутерах Asus, Keenetic, OpenWrt, MikroTik. Защита всех устройств сети автоматически.",
+    "mainEntityOfPage": "https://vpnhub-cyber.github.io/devices/routers/",
+    "image": "https://vpnhub-cyber.github.io/images/og-safenet.jpg",
+    "totalTime": "PT20M",
+    "step": [
+      {
+        "@type": "HowToStep",
+        "name": "Получение конфигурации",
+        "text": "Получите файл конфигурации .ovpn или .conf от провайдера VPN"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Вход в роутер",
+        "text": "Откройте веб-интерфейс роутера через браузер (192.168.1.1 или 192.168.0.1)"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Поиск VPN раздела",
+        "text": "Найдите раздел VPN Client, OpenVPN или WireGuard в настройках роутера"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Импорт профиля",
+        "text": "Загрузите и импортируйте файл конфигурации VPN"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Активация подключения",
+        "text": "Включите VPN подключение и дождитесь статуса Connected"
+      },
+      {
+        "@type": "HowToStep",
+        "name": "Проверка работы",
+        "text": "Проверьте IP адрес на любом устройстве — должен показать VPN сервер"
+      }
+    ],
+    "tool": [
+      {
+        "@type": "HowToTool",
+        "name": "Роутер с поддержкой VPN клиента"
+      },
+      {
+        "@type": "HowToTool",
+        "name": "Конфигурационный файл VPN"
+      }
+    ]
+  }
+  </script>
+
+  <!-- Schema.org JSON-LD: Breadcrumbs -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Главная",
+        "item": "https://vpnhub-cyber.github.io/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Устройства",
+        "item": "https://vpnhub-cyber.github.io/devices/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Роутеры",
+        "item": "https://vpnhub-cyber.github.io/devices/routers/"
+      }
+    ]
+  }
+  </script>
+</body>
+</html>
