@@ -109,4 +109,35 @@
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
+
+  <url>
+  <loc>https://vpnhub-cyber.github.io/guide/protocols/</loc>
+  <lastmod>2025-08-15</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://vpnhub-cyber.github.io/comparisons/</loc>
+  <lastmod>2025-08-15</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.7</priority>
+</url>
+<url>
+  <loc>https://vpnhub-cyber.github.io/devices/tablets/</loc>
+  <lastmod>2025-08-15</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.7</priority>
+</url>
+<url>
+  <loc>https://vpnhub-cyber.github.io/devices/routers/</loc>
+  <lastmod>2025-08-15</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.8</priority>
+</url>
+<url>
+  <loc>https://vpnhub-cyber.github.io/devices/gaming/</loc>
+  <lastmod>2025-08-15</lastmod>
+  <changefreq>monthly</changefreq>
+  <priority>0.7</priority>
+</url>
 </urlset>
