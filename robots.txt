@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://vpnhub-cyber.github.io/sitemap.xml
